@@ -9,7 +9,7 @@ class Crawler:
 
         # Crawler internals test 
         #sudfghgfuewuew
-        print("Crawler init aaaa")
+        print("Crawler init aaaabbbb")
         self.app = app
         self.stop_event = stop_event
         self.downloader = downloader
