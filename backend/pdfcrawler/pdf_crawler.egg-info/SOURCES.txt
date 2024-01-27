@@ -1,0 +1,15 @@
+README.md
+setup.py
+crawler/__init__.py
+crawler/crawl_methods.py
+crawler/crawler.py
+crawler/downloaders.py
+crawler/handlers.py
+crawler/helper.py
+crawler/proxy.py
+pdf_crawler.egg-info/PKG-INFO
+pdf_crawler.egg-info/SOURCES.txt
+pdf_crawler.egg-info/dependency_links.txt
+pdf_crawler.egg-info/entry_points.txt
+pdf_crawler.egg-info/requires.txt
+pdf_crawler.egg-info/top_level.txt

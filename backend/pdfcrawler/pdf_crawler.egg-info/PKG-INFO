@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: pdf-crawler
+Version: 0.1
+Requires-Dist: beautifulsoup4
+Requires-Dist: click
+Requires-Dist: requests
+Requires-Dist: selenium
+Requires-Dist: requests_html
+Requires-Dist: psutil
+Provides-Extra: tests
+Requires-Dist: pytest; extra == "tests"
+Requires-Dist: pytest-cov; extra == "tests"
+Requires-Dist: pytest-flakes; extra == "tests"
+Requires-Dist: pytest-pep8; extra == "tests"

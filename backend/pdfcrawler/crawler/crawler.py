@@ -7,7 +7,9 @@ import time
 class Crawler:
     def __init__(self, app, stop_event, socketio, downloader, get_handlers=None, head_handlers=None, follow_foreign_hosts=False, crawl_method="normal", gecko_path="geckodriver", process_handler=None):
 
-        # Crawler internals
+        # Crawler internals test 
+        #sudfghgfuewuew
+        print("Crawler init aaaa")
         self.app = app
         self.stop_event = stop_event
         self.downloader = downloader
@@ -71,7 +73,7 @@ class Crawler:
         head_handler = self.head_handlers.get(content_type.strip())
         if head_handler:
             head_handler.handle(response, depth, previous_url, local_name, local_name)
-        
+        #aaaaa
         if content_type == "text/html" and depth > 0 and follow:
             print(f"depth: {depth}, follow: {follow}")
             urls = self.get_urls(response)

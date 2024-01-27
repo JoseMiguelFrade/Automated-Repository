@@ -1,0 +1,12 @@
+beautifulsoup4
+click
+requests
+selenium
+requests_html
+psutil
+
+[tests]
+pytest
+pytest-cov
+pytest-flakes
+pytest-pep8
