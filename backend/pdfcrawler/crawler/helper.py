@@ -90,6 +90,8 @@ def parse_result_to_dict(result_str):
             key = key.strip().lower().replace(" ", "_")
 
             # Map the key from the response to the dictionary fields
+            if key == "is_related":
+                result_dict["is_related"] = value.strip()
             if key == "title":
                 result_dict["title"] = value.strip()
             elif key == "issuer":

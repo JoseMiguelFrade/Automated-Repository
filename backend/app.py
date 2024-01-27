@@ -19,6 +19,7 @@ from pymongo import MongoClient
 from pdfcrawler.crawler.helper import parse_result_to_dict
 from bson.objectid import ObjectId
 import gridfs
+import shutil
 from io import BytesIO
 #import json
 load_dotenv()  # Load environment variables from .env file
@@ -137,29 +138,39 @@ def upload_keywords():
 def update_repo():
     stop_crawler()  # Assuming this is a function you've defined elsewhere
 
-    # Get the directory of this script and the PDF path
+    # Define directories
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    relative_pdf_path = os.path.join("crawling_test", "data.europa.eu", "test2.pdf")
+    accepted_files_dir = os.path.join(base_dir, "accepted_files")
+    rejected_files_dir = os.path.join(base_dir, "rejected_files")
+    os.makedirs(accepted_files_dir, exist_ok=True)
+    os.makedirs(rejected_files_dir, exist_ok=True)
+
+    # Get the PDF path
+    relative_pdf_path = os.path.join("crawling_test", "data.europa.eu", "test3.pdf")
     pdf_path = os.path.join(base_dir, relative_pdf_path)
 
     # Analyze the document using the function from gpt_repo
     result = gpt_repo.analyze_document(pdf_path)
     result_dict = parse_result_to_dict(result)
-    print(f"result{result}")
-    print(f"result_dict{result_dict}")
-    # Store the PDF in GridFS
-    with open(pdf_path, 'rb') as pdf_file:
-        pdf_file_id = fs.put(pdf_file, filename=os.path.basename(pdf_path))
 
-    # Add the GridFS file ID to the result dictionary
-    result_dict['pdf_file_id'] = str(pdf_file_id)
+    # Check if the document is related
+    if result_dict.get("is_related", "").lower() == "no":
+        # Store in rejected_files directory
+        rejected_file_path = os.path.join(rejected_files_dir, os.path.basename(pdf_path))
+        shutil.copy(pdf_path, rejected_file_path)
+        return jsonify({'result': 'Rejected', 'reason': 'Not related'}), 200
+    else:
+        # Store the PDF in GridFS and MongoDB
+        with open(pdf_path, 'rb') as pdf_file:
+            pdf_file_id = fs.put(pdf_file, filename=os.path.basename(pdf_path))
+            result_dict['pdf_file_id'] = str(pdf_file_id)
+            document_id = documents_collection.insert_one(result_dict).inserted_id
 
-    # Store in MongoDB (excluding the local file path)
-    document_id = documents_collection.insert_one(result_dict).inserted_id
-    print(f"Document stored with ID: {document_id}")
+        # Copy to accepted_files directory
+        accepted_file_path = os.path.join(accepted_files_dir, os.path.basename(pdf_path))
+        shutil.copy(pdf_path, accepted_file_path)
 
-    return jsonify({'result': 'Success', 'document_id': str(document_id), 'pdf_file_id': str(pdf_file_id)}), 200
-
+        return jsonify({'result': 'Success', 'document_id': str(document_id), 'pdf_file_id': str(pdf_file_id)}), 200
 # @app.route('/update-repo', methods=['POST'])
 # def update_repo():
 #     stop_crawler()  # Assuming this is a function you've defined elsewhere

@@ -98,7 +98,7 @@ def regenerate_document_field(pdf, field, temperature):
             {"role": "user", "content": user_content}
         ],
         temperature=temperature,
-        max_tokens=100,
+        max_tokens=120,
         top_p=1
     )
     return response.choices[0].message.content

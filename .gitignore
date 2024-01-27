@@ -1,3 +1,5 @@
 backend/crawling_test/*
 backend/.env
+backend/accepted_files/*
+backend/rejected_files/*
 
