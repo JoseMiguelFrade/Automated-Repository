@@ -8,8 +8,6 @@ class Crawler:
     def __init__(self, app, stop_event, socketio, downloader, get_handlers=None, head_handlers=None, follow_foreign_hosts=False, crawl_method="normal", gecko_path="geckodriver", process_handler=None):
 
         # Crawler internals test 
-        #sudfghgfuewuew
-        print("Crawler init aaaabbbb")
         self.app = app
         self.stop_event = stop_event
         self.downloader = downloader

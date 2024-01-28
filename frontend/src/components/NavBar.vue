@@ -1,6 +1,8 @@
 <template>
     <v-app-bar app>
-        <v-toolbar-title>CiberLaw</v-toolbar-title>
+        <v-toolbar-title style="color: #ffffff; font-weight: bold;">
+      Cyberlaw
+    </v-toolbar-title>
         <v-spacer></v-spacer>
 
         <!-- Home Button -->
@@ -119,3 +121,8 @@ export default {
 };
 </script>;
   
+<style>
+.v-app-bar {
+  background: linear-gradient(to right, #77aee5, #ffffff) !important; /* Adjust gradient colors as needed */
+}
+</style>

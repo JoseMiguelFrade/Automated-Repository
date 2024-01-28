@@ -12,6 +12,9 @@ import Navbar from './components/NavBar.vue';
 
 export default {
   name: 'App',
+  mounted() {
+    document.title = "Cyberlaw";
+  },
   components: {
     Navbar
   }

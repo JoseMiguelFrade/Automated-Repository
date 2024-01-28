@@ -36,7 +36,7 @@
               <strong>Related Documents:</strong>
               {{ document.related_docs && document.related_docs.length ? document.related_docs.join(', ') : 'None' }}
             </div>
-            <div><strong>Abstract:</strong> {{ document.abstract }}</div>
+            <div><strong>Abstract:</strong> {{ truncateAbstract(document.abstract) }}</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -200,6 +200,12 @@ export default {
     },
     goToDetails(id) {
       this.$router.push({ name: 'Details', params: { id } });
+    },
+    truncateAbstract(abstract) {
+      if (abstract.length > 455) {
+        return abstract.substring(0, 455) + '...';
+      }
+      return abstract;
     }
   }
 };

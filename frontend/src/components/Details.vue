@@ -47,7 +47,7 @@
                     </v-list-item>
                     <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title>
+                            <v-list-item-title class="text-wrap">
                                 <strong>Related Documents:</strong>
                                 {{ documentDetails.related_docs && documentDetails.related_docs.length ?
                                     documentDetails.related_docs.join(', ') : 'None' }}

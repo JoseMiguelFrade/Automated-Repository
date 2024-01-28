@@ -158,6 +158,8 @@ def update_repo():
         # Store in rejected_files directory
         rejected_file_path = os.path.join(rejected_files_dir, os.path.basename(pdf_path))
         shutil.copy(pdf_path, rejected_file_path)
+        #delete file from crawling_test
+        os.remove(pdf_path)
         return jsonify({'result': 'Rejected', 'reason': 'Not related'}), 200
     else:
         # Store the PDF in GridFS and MongoDB
@@ -169,7 +171,8 @@ def update_repo():
         # Copy to accepted_files directory
         accepted_file_path = os.path.join(accepted_files_dir, os.path.basename(pdf_path))
         shutil.copy(pdf_path, accepted_file_path)
-
+        #delete file from crawling_test
+        os.remove(pdf_path)
         return jsonify({'result': 'Success', 'document_id': str(document_id), 'pdf_file_id': str(pdf_file_id)}), 200
 # @app.route('/update-repo', methods=['POST'])
 # def update_repo():
