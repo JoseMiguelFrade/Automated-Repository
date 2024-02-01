@@ -88,7 +88,8 @@ def parse_result_to_dict(result_str):
         if len(key_value) == 2:
             key, value = key_value
             key = key.strip().lower().replace(" ", "_")
-
+            #remove < > from value
+            value = value.replace("<","").replace(">","")
             # Map the key from the response to the dictionary fields
             if key == "is_related":
                 result_dict["is_related"] = value.strip()
@@ -107,9 +108,9 @@ def parse_result_to_dict(result_str):
             elif key == "area":
                 result_dict["area"] = value.strip()
             elif key == "related_docs":
-                # Assuming the related documents are separated by '<' and '>'
-                docs = value.strip().split('><')
-                result_dict["related_docs"] = [doc.replace('<', '').replace('>', '') for doc in docs]
+                # Assuming the related documents are separated by |
+                docs = value.strip().split('|')
+                result_dict["related_docs"] = [doc.replace('|', '') for doc in docs]
             elif key == "abstract":
                 result_dict["abstract"] = value.strip()
             # Add additional mappings as needed

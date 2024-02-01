@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 #MongoDB setup
 client = MongoClient('mongodb://localhost:27017/')
-db = client['Ciberlaw']
+db = client['CyberlawRepo']
 documents_collection = db['Documents']
 fs = gridfs.GridFS(db)
 
@@ -134,69 +134,89 @@ def upload_keywords():
     else:
         return {'message': 'Invalid file'}, 400
 
+# @app.route('/update-repo', methods=['POST'])
+# def update_repo():
+#     stop_crawler()  # Assuming this is a function you've defined elsewhere
+
+#     # Define directories
+#     base_dir = os.path.dirname(os.path.abspath(__file__))
+#     accepted_files_dir = os.path.join(base_dir, "accepted_files")
+#     rejected_files_dir = os.path.join(base_dir, "rejected_files")
+#     os.makedirs(accepted_files_dir, exist_ok=True)
+#     os.makedirs(rejected_files_dir, exist_ok=True)
+
+#     # Get the PDF path
+#     relative_pdf_path = os.path.join("crawling_test", "diariodarepublica.pt", "testA.pdf")
+#     pdf_path = os.path.join(base_dir, relative_pdf_path)
+
+#     # Analyze the document using the function from gpt_repo
+#     result = gpt_repo.analyze_document(pdf_path)
+#     result_dict = parse_result_to_dict(result)
+
+#     # Check if the document is related
+#     if result_dict.get("is_related", "").lower() == "no":
+#         # Store in rejected_files directory
+#         rejected_file_path = os.path.join(rejected_files_dir, os.path.basename(pdf_path))
+#         shutil.copy(pdf_path, rejected_file_path)
+#         #delete file from crawling_test
+#         os.remove(pdf_path)
+#         return jsonify({'result': 'Rejected', 'reason': 'Not related'}), 200
+#     else:
+#         # Store the PDF in GridFS and MongoDB
+#         with open(pdf_path, 'rb') as pdf_file:
+#             pdf_file_id = fs.put(pdf_file, filename=os.path.basename(pdf_path))
+#             result_dict['pdf_file_id'] = str(pdf_file_id)
+#             document_id = documents_collection.insert_one(result_dict).inserted_id
+
+#         # Copy to accepted_files directory
+#         accepted_file_path = os.path.join(accepted_files_dir, os.path.basename(pdf_path))
+#         shutil.copy(pdf_path, accepted_file_path)
+#         #delete file from crawling_test
+#         os.remove(pdf_path)
+#         return jsonify({'result': 'Success', 'document_id': str(document_id), 'pdf_file_id': str(pdf_file_id)}), 200
 @app.route('/update-repo', methods=['POST'])
 def update_repo():
-    stop_crawler()  # Assuming this is a function you've defined elsewhere
+    stop_crawler()
 
     # Define directories
     base_dir = os.path.dirname(os.path.abspath(__file__))
     accepted_files_dir = os.path.join(base_dir, "accepted_files")
     rejected_files_dir = os.path.join(base_dir, "rejected_files")
+    specified_subdir = "data.europa.eu" 
+    crawling_test_dir = os.path.join(base_dir, "crawling_test", specified_subdir)
     os.makedirs(accepted_files_dir, exist_ok=True)
     os.makedirs(rejected_files_dir, exist_ok=True)
 
-    # Get the PDF path
-    relative_pdf_path = os.path.join("crawling_test", "data.europa.eu", "test3.pdf")
-    pdf_path = os.path.join(base_dir, relative_pdf_path)
+    # Get the list of first 50 PDFs in the specified subdir
+    pdf_files = [os.path.join(crawling_test_dir, f) for f in os.listdir(crawling_test_dir) if f.endswith('.pdf')][:10]
 
-    # Analyze the document using the function from gpt_repo
-    result = gpt_repo.analyze_document(pdf_path)
-    result_dict = parse_result_to_dict(result)
+    for pdf_path in pdf_files:
+        # Analyze the document using the function from gpt_repo
+        result = gpt_repo.analyze_document(pdf_path)
+        result_dict = parse_result_to_dict(result)
 
-    # Check if the document is related
-    if result_dict.get("is_related", "").lower() == "no":
-        # Store in rejected_files directory
-        rejected_file_path = os.path.join(rejected_files_dir, os.path.basename(pdf_path))
-        shutil.copy(pdf_path, rejected_file_path)
-        #delete file from crawling_test
-        os.remove(pdf_path)
-        return jsonify({'result': 'Rejected', 'reason': 'Not related'}), 200
-    else:
-        # Store the PDF in GridFS and MongoDB
-        with open(pdf_path, 'rb') as pdf_file:
-            pdf_file_id = fs.put(pdf_file, filename=os.path.basename(pdf_path))
-            result_dict['pdf_file_id'] = str(pdf_file_id)
-            document_id = documents_collection.insert_one(result_dict).inserted_id
+        # Check if the document is related
+        #print(result_dict)
+        if result_dict.get("is_related", "").lower() == "yes":
+                       # Store the PDF in GridFS and MongoDB
+            #print("related")
+            with open(pdf_path, 'rb') as pdf_file:
+                
 
-        # Copy to accepted_files directory
-        accepted_file_path = os.path.join(accepted_files_dir, os.path.basename(pdf_path))
-        shutil.copy(pdf_path, accepted_file_path)
-        #delete file from crawling_test
-        os.remove(pdf_path)
-        return jsonify({'result': 'Success', 'document_id': str(document_id), 'pdf_file_id': str(pdf_file_id)}), 200
-# @app.route('/update-repo', methods=['POST'])
-# def update_repo():
-#     stop_crawler()  # Assuming this is a function you've defined elsewhere
+                pdf_file_id = fs.put(pdf_file, filename=os.path.basename(pdf_path))
+                result_dict['pdf_file_id'] = str(pdf_file_id)
+                document_id = documents_collection.insert_one(result_dict).inserted_id
 
-#     # Get the directory of this script
-#     base_dir = os.path.dirname(os.path.abspath(__file__))
-#     relative_pdf_path = os.path.join("crawling_test", "eur-lex.europa.eu", "b.pdf")
-#     pdf_path = os.path.join(base_dir, relative_pdf_path)
+                # Move to accepted_files directory
+            accepted_file_path = os.path.join(accepted_files_dir, os.path.basename(pdf_path))
+            shutil.move(pdf_path, accepted_file_path)
+            
+        else:
+             # Move to rejected_files directory
+            rejected_file_path = os.path.join(rejected_files_dir, os.path.basename(pdf_path))
+            shutil.move(pdf_path, rejected_file_path)
 
-#     # Analyze the document using the function from gpt_repo
-#     result = gpt_repo.analyze_document(pdf_path)
-#     print(result)
-
-#     # Parse the JSON string into a Python dictionary
-#     result_json = json.loads(result)
-#     result_json['pdf_path'] = pdf_path  # Add the PDF path to the dictionary
-
-#     # Store in MongoDB
-#     document_id = documents_collection.insert_one(result_json).inserted_id
-#     print(f"Document stored with ID: {document_id}")
-
-#     return jsonify({'result': 'Success', 'document_id': str(document_id)}), 200
- 
+    return jsonify({'result': 'Update completed'}), 200
 
 @app.route('/get-documents', methods=['GET'])
 def get_documents():
@@ -254,13 +274,13 @@ def update_document(id):
        # Convert related_docs from string to array if necessary
         print(update_data)
         if 'related_docs' in update_data and isinstance(update_data['related_docs'], str):
-            update_data['related_docs'] = update_data['related_docs'].split(',')
+            update_data['related_docs'] = update_data['related_docs'].split('|')
 
         elif isinstance(update_data['related_docs'], list) and update_data['related_docs'] and isinstance(update_data['related_docs'][0], str):
             updated_related_docs = []
             for doc in update_data['related_docs']:
                 # Extract individual documents from the formatted string
-                extracted_docs = doc.replace('><', '>;<').split(';')
+                extracted_docs = doc.replace('|', ' ').split(' ')
                 for extracted_doc in extracted_docs:
                     updated_related_docs.append(extracted_doc.strip('<>')) # Remove any leading/trailing angle brackets
             update_data['related_docs'] = updated_related_docs

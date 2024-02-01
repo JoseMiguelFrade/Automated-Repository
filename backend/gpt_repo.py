@@ -33,21 +33,37 @@ def extract_text_from_pdf_with_pdfminer(pdf_path="", pdf="",max_tokens=700):
     #print(f"Truncated text: {truncated_text}")
     return truncated_text
 
+request_count = 0  # Global counter for requests
+
 def analyze_document(pdf_path):
+    global request_count
     pdf_text = extract_text_from_pdf_with_pdfminer(pdf_path)
 
     client = openai.OpenAI()
+
+    # Switch between models based on request count
+    if request_count % 10 < 4:
+        model = "gpt-3.5-turbo-1106"
+    else:
+        model = "gpt-4-1106-preview"
+    print(f"Model: {model}")
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model=model,
         messages=[
-            {"role": "system", "content": "You are a helpful assistant. Respond to each question with key-value pairs separated by '#', and use a colon ':' to separate keys and values."},
-            {"role": "user", "content": f"Analyze the following document extract: '{pdf_text}'. Provide structured information indicating: is it related to IT/cybersecurity/data privacy/AI?, its subject, the issuer, the country/institution origin, its type (is it a law/norm/regulation/treaty/...),the date of emission, the area of application, the title, two related laws/declarations/norms/regulations if any, and a brief summary (80 tokens max) of the document. Use the format 'is_related:<yes/no>#issuer:<issuer_name>#origin:<origin>#type:<Norm/Law/Regulation/Treaty/...>#subject:<Privacy/Governance/Security/...>#date:<date>#area:<Finance/Healthcare/General/Energy/...>#title:<document_title>#Related_Docs:<doc1><doc2>#abstract:<brief_summary>'."}
+            {"role": "system", "content": "You are a helpful assistant. Always respond in the format 'field:<field_value>'."},
+            {"role": "user", "content": f"Analyze the following document extract: '{pdf_text}'. First, determine if it is related to IT/cybersecurity/data privacy/AI. If it is not related, respond with 'is_related:<no>'. If it is related, provide structured information with the following format (if no related_docs, the value for related_docs is <none>) (use English to write the Abstract and Type): 'is_related:<yes>#issuer:<issuer_name>#origin:<origin>#type:<Norm/Law/Regulation/Treaty/...>#subject:<Privacy/Governance/Security/...>#date:<date in dd/mm/yyyy format>#area:<Finance/Healthcare/General/Energy/...>#title:<document_title>#Related_Docs:doc1|doc2|doc3#abstract:<brief_summary (80 tokens max)>'."}
         ],
         temperature=0.4,
         max_tokens=280,
         top_p=1
     )
+
+    print(response.choices[0].message.content)
+    
+    # Increment request count
+    request_count += 1
     return response.choices[0].message.content
+
 
 # def analyze_document(pdf_path):
 #     pdf_text = extract_text_from_pdf_with_pdfminer(pdf_path)
@@ -76,11 +92,11 @@ def regenerate_document_field(pdf, field, temperature):
     if field == 'title':
         user_content = f"What is the the title of the following document extract: '{pdf_text}'. Plese answer in the format 'title:<document_title>'."
     elif field == 'date':
-        user_content = f"What is the date of emission for the following document extract: '{pdf_text}'. Plese answer in the format 'date:<date>'."
+        user_content = f"What is the date of emission for the following document extract: '{pdf_text}'. Plese answer in the format 'date:<date in dd/mm/yyyy format>'."
     elif field == 'abstract':
         user_content = f"Make an abstract (80 tokens max) based on the following document extract: '{pdf_text}'. Plese answer in the format 'abstract:<brief_summary>'."
     elif field == 'related_docs':
-        user_content =  f"List two titles (just the titles) of documents related to this extract, excluding the document's extract title itself (example: document from where the extract was taken has the title A. You cant answer Related_Docs:<A>,<B> or <A, long version of the title>, <B>): '{pdf_text}'. Respond 'related_docs:<related_doc1_title>,<related_doc2_title>' or 'related_docs:None' if none."
+        user_content =  f"List two titles (just the titles) of documents related to this extract, excluding the document's extract title itself (example: document from where the extract was taken has the title A. You cant answer Related_Docs:<A|B> or <A, long version of the title|B>): '{pdf_text}'. Respond 'related_docs:related_doc1_title|related_doc2_title' or 'related_docs:<none>' if none."
     elif field == 'issuer':
         user_content = f"What is the issuer of the following document extract: '{pdf_text}'. Plese answer in the format 'issuer:<issuer_name>'."
     elif field == 'origin':
