@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+  <v-container>
     <!-- Filter Button and Search Bar -->
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
@@ -10,13 +10,8 @@
             </v-btn>
           </v-col>
           <v-col cols="10">
-            <v-text-field
-              v-model="searchQuery"
-              label="Search Documents"
-              append-icon="mdi-magnify"
-              @input="() => { currentPage = 1 }"  
-              outlined
-            ></v-text-field>
+            <v-text-field v-model="searchQuery" label="Search Documents" append-icon="mdi-magnify"
+              @input="() => { currentPage = 1 }" outlined></v-text-field>
           </v-col>
         </v-row>
       </v-col>
@@ -51,64 +46,44 @@
 
     <!-- Filter Dialog -->
     <v-dialog v-model="dialog" max-width="600px">
-  <v-card>
-    <v-card-title class="headline">Search Filters</v-card-title>
-    <v-card-text>
-      <v-row>
-        <v-col cols="12">
-          <v-select
-            label="Type"
-            v-model="tempFilters.type"
-            :items="['Law', 'Directive', 'Regulation', 'Other']"
-            outlined
-            clearable
-          ></v-select>
-        </v-col>
-        <v-col cols="12">
-          <v-select
-            label="Issuer"
-            v-model="tempFilters.issuer"
-            :items="['EU', 'Diário da República', 'Other']"
-            outlined
-            clearable
-          ></v-select>
-        </v-col>
-        <v-col cols="12">
-          <v-select
-            label="Country"
-            v-model="tempFilters.country"
-            :items="['EU', 'Portugal', 'Other']"
-            outlined
-            clearable
-          ></v-select>
-        </v-col>
-        <v-col cols="12">
-          <v-select
-            label="Subject"
-            v-model="tempFilters.subject"
-            :items="['IT', 'Cybersecurity', 'Privacy', 'Digital Rights', 'AI', 'Other']"
-            outlined
-            clearable
-          ></v-select>
-        </v-col>
-        <v-col cols="12">
-          <v-select
-            label="Area"
-            v-model="tempFilters.area"
-            :items="['General', 'Defense', 'Healthcare', 'Finance', 'Energy', 'Other']"
-            outlined
-            clearable
-          ></v-select>
-        </v-col>
-      </v-row>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="blue darken-1" text @click="dialog = false">Back</v-btn>
-      <v-btn color="green darken-1" text @click="applyFilters">Apply</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+      <v-card>
+        <v-card-title class="headline">Search Filters</v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12">
+              <v-subheader>Type</v-subheader>
+              <v-checkbox v-for="typeOption in typeOptions" :key="typeOption" :label="typeOption"
+                v-model="tempFilters.type" :value="typeOption"></v-checkbox>
+            </v-col>
+            <v-col cols="12">
+              <v-subheader>Issuer</v-subheader>
+              <v-checkbox v-for="issuerOption in issuerOptions" :key="issuerOption" :label="issuerOption"
+                v-model="tempFilters.issuer" :value="issuerOption"></v-checkbox>
+            </v-col>
+            <v-col cols="12">
+              <v-subheader>Origin</v-subheader>
+              <v-checkbox v-for="originOption in originOptions" :key="originOption" :label="originOption"
+                v-model="tempFilters.origin" :value="originOption"></v-checkbox>
+            </v-col>
+            <v-col cols="12">
+              <v-subheader>Subject</v-subheader>
+              <v-checkbox v-for="subjectOption in subjectOptions" :key="subjectOption" :label="subjectOption"
+                v-model="tempFilters.subject" :value="subjectOption"></v-checkbox>
+            </v-col>
+            <v-col cols="12">
+              <v-subheader>Area</v-subheader>
+              <v-checkbox v-for="areaOption in areaOptions" :key="areaOption" :label="areaOption"
+                v-model="tempFilters.area" :value="areaOption"></v-checkbox>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="dialog = false">Back</v-btn>
+          <v-btn color="green darken-1" text @click="applyFilters">Apply</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -121,24 +96,29 @@ export default {
   name: 'Repository',
   data() {
     return {
+      typeOptions: ['Law', 'Directive', 'Regulation', 'Other'],
+      issuerOptions: ['EU', 'Diário da República', 'Other'],
+      originOptions: ['EU', 'Portugal', 'Other'],
+      subjectOptions: ['IT', 'Cybersecurity', 'Privacy', 'Digital Rights', 'AI', 'Other'],
+      areaOptions: ['General', 'Defense', 'Healthcare', 'Finance', 'Energy', 'Other'],
       documents: [],
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 15,
       dialog: false,
       filters: {
-        type: null,
-        subject: null,
-        area: null,
-        issuer: null,
-        origin: null
+        type: [],
+        subject: [],
+        area: [],
+        issuer: [],
+        origin: []
       },
       tempFilters: {
-        type: null,
-        subject: null,
-        area: null,
-        issuer: null,
-        origin: null
+        type: [],
+        subject: [],
+        area: [],
+        issuer: [],
+        origin: []
       }
     };
   },
@@ -170,32 +150,40 @@ export default {
       }
     },
     applyFiltersToDocument(doc) {
-      if (this.filters.issuer && doc.issuer.toLowerCase() !== this.filters.issuer.toLowerCase()) {
-        return false;
-      }
-      if (this.filters.origin && doc.origin.toLowerCase() !== this.filters.origin.toLowerCase()) {
-        return false;
-      }
-      if (this.filters.type && doc.type.toLowerCase() !== this.filters.type.toLowerCase()) {
-        return false;
-      }
-      if (this.searchQuery && !doc.title.toLowerCase().includes(this.searchQuery.toLowerCase())) {
-        return false;
-      }
-      if (this.filters.subject && doc.subject.toLowerCase() !== this.filters.subject.toLowerCase()) {
-        return false;
-      }
-      if (this.filters.area && doc.area.toLowerCase() !== this.filters.area.toLowerCase()) {
-        return false;
-      }
-      return true;
+      // Helper function to determine if a document matches the "Other" criteria for a given category
+      const matchesOther = (categoryOptions, docValue, selectedFilters) => {
+        const lowerCaseOptions = categoryOptions.map(option => option.toLowerCase());
+        const isOtherSelected = selectedFilters.includes('Other');
+        const matchesPredefinedOption = lowerCaseOptions.includes(docValue.toLowerCase());
+        // If "Other" is selected but the document matches a predefined option, return false
+        return isOtherSelected && !matchesPredefinedOption;
+      };
+
+      // Checks if the document matches selected filters or the "Other" criteria for each category
+      const matchesType = !this.tempFilters.type.length ||
+        this.tempFilters.type.some(type => type === 'Other' ? matchesOther(this.typeOptions, doc.type, this.tempFilters.type) : doc.type.toLowerCase() === type.toLowerCase());
+
+      const matchesIssuer = !this.tempFilters.issuer.length ||
+        this.tempFilters.issuer.some(issuer => issuer === 'Other' ? matchesOther(this.issuerOptions, doc.issuer, this.tempFilters.issuer) : doc.issuer.toLowerCase() === issuer.toLowerCase());
+
+      const matchesOrigin = !this.tempFilters.origin.length ||
+        this.tempFilters.origin.some(origin => origin === 'Other' ? matchesOther(this.originOptions, doc.origin, this.tempFilters.origin) : doc.origin.toLowerCase() === origin.toLowerCase());
+
+      const matchesSubject = !this.tempFilters.subject.length || this.tempFilters.subject.some(subject => subject === 'Other' ? matchesOther(this.subjectOptions, doc.subject, this.tempFilters.subject) : doc.subject.toLowerCase() === subject.toLowerCase());
+
+      const matchesArea = !this.tempFilters.area.length || this.tempFilters.area.some(area => area === 'Other' ? matchesOther(this.areaOptions, doc.area, this.tempFilters.area) : doc.area.toLowerCase() === area.toLowerCase());
+
+
+
+      // Combine all match conditions. A document must satisfy all category conditions to be included.
+      return matchesType && matchesIssuer && matchesOrigin && matchesSubject && matchesArea; // Add other conditions here using && operator
     },
     applyFilters() {
-      this.filters = {...this.tempFilters};
+      this.filters = { ...this.tempFilters };
       this.dialog = false;
     },
     openDialog() {
-      this.tempFilters = {...this.filters};
+      this.tempFilters = { ...this.filters };
       this.dialog = true;
     },
     goToDetails(id) {

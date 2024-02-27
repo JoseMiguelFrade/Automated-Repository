@@ -142,6 +142,8 @@ class ClickCrawler:
             consent_button.click()
             ok_button = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/button/span/span')
             ok_button.click()
+            ok_button = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/a')
+            ok_button.click()
             print("Clicked cookie consent button")
         except NoSuchElementException:
             print("No cookie consent button found")
