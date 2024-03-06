@@ -40,46 +40,73 @@
     <!-- Pagination Control -->
     <v-row justify="center">
       <v-col cols="12">
-        <v-pagination v-model="currentPage" :length="totalPages" circle></v-pagination>
+        <v-pagination v-model="currentPage" :length="totalPages" :total-visible="7" circle></v-pagination>
       </v-col>
     </v-row>
 
     <!-- Filter Dialog -->
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
-        <v-card-title class="headline">Search Filters</v-card-title>
+        <v-card-title class="headline">Search Filters and Ordering</v-card-title>
         <v-card-text>
-          <v-row>
-            <v-col cols="12">
-              <v-subheader>Type</v-subheader>
-              <v-checkbox v-for="typeOption in typeOptions" :key="typeOption" :label="typeOption"
-                v-model="tempFilters.type" :value="typeOption"></v-checkbox>
-            </v-col>
-            <v-col cols="12">
-              <v-subheader>Issuer</v-subheader>
-              <v-checkbox v-for="issuerOption in issuerOptions" :key="issuerOption" :label="issuerOption"
-                v-model="tempFilters.issuer" :value="issuerOption"></v-checkbox>
-            </v-col>
-            <v-col cols="12">
-              <v-subheader>Origin</v-subheader>
-              <v-checkbox v-for="originOption in originOptions" :key="originOption" :label="originOption"
-                v-model="tempFilters.origin" :value="originOption"></v-checkbox>
-            </v-col>
-            <v-col cols="12">
-              <v-subheader>Subject</v-subheader>
-              <v-checkbox v-for="subjectOption in subjectOptions" :key="subjectOption" :label="subjectOption"
-                v-model="tempFilters.subject" :value="subjectOption"></v-checkbox>
-            </v-col>
-            <v-col cols="12">
-              <v-subheader>Area</v-subheader>
-              <v-checkbox v-for="areaOption in areaOptions" :key="areaOption" :label="areaOption"
-                v-model="tempFilters.area" :value="areaOption"></v-checkbox>
-            </v-col>
-          </v-row>
+          <v-container>
+            <v-row dense>
+              <v-col cols="12">
+                <v-subheader>Type</v-subheader>
+                <v-row>
+                  <v-col v-for="typeOption in typeOptions" :key="typeOption" cols="6">
+                    <v-checkbox :label="typeOption" v-model="tempFilters.type" :value="typeOption"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-subheader>Issuer</v-subheader>
+                <v-row>
+                  <v-col v-for="issuerOption in issuerOptions" :key="issuerOption" cols="6">
+                    <v-checkbox :label="issuerOption" v-model="tempFilters.issuer" :value="issuerOption"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-subheader>Origin</v-subheader>
+                <v-row>
+                  <v-col v-for="originOption in originOptions" :key="originOption" cols="6">
+                    <v-checkbox :label="originOption" v-model="tempFilters.origin" :value="originOption"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-subheader>Subject</v-subheader>
+                <v-row>
+                  <v-col v-for="subjectOption in subjectOptions" :key="subjectOption" cols="6">
+                    <v-checkbox :label="subjectOption" v-model="tempFilters.subject" :value="subjectOption"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-subheader>Area</v-subheader>
+                <v-row>
+                  <v-col v-for="areaOption in areaOptions" :key="areaOption" cols="6">
+                    <v-checkbox :label="areaOption" v-model="tempFilters.area" :value="areaOption"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12" class="mt-4">
+                <v-divider></v-divider>
+                <v-subheader class="mt-3">Order By</v-subheader>
+                <v-select v-model="sortingOption" :items="sortingOptions" item-value="value" item-title="text"
+                  label="Sorting" return-object></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">Back</v-btn>
+        <v-card-actions class="justify-end">
+          <v-btn color="blue darken-1" text @click="dialog = false">Cancel</v-btn>
           <v-btn color="green darken-1" text @click="applyFilters">Apply</v-btn>
         </v-card-actions>
       </v-card>
@@ -96,6 +123,7 @@ export default {
   name: 'Repository',
   data() {
     return {
+
       typeOptions: ['Law', 'Directive', 'Regulation', 'Other'],
       issuerOptions: ['EU', 'Diário da República', 'Other'],
       originOptions: ['EU', 'Portugal', 'Other'],
@@ -119,7 +147,18 @@ export default {
         area: [],
         issuer: [],
         origin: []
-      }
+      },
+      sortingOption: { value: 'title-asc', text: 'Title Ascending' },// default sorting option
+      sortingOptions: [
+        { value: 'title-asc', text: 'Title Ascending' },
+        { value: 'title-desc', text: 'Title Descending' },
+        { value: 'date-asc', text: 'Date Ascending' },
+        { value: 'date-desc', text: 'Date Descending' },
+        { value: 'area-asc', text: 'Area Ascending' },
+        { value: 'area-desc', text: 'Area Descending' },
+        { value: 'subject-asc', text: 'Subject Ascending' },
+        { value: 'subject-desc', text: 'Subject Descending' },
+      ],
     };
   },
   computed: {
@@ -133,7 +172,35 @@ export default {
     },
     filteredDocuments() {
       return this.documents.filter(doc => {
-        return this.applyFiltersToDocument(doc);
+        // First, check if the document matches the search query if one is present
+        const matchesSearchQuery = this.searchQuery.trim() === '' || doc.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+
+        // Then, check if it matches the selected filters
+        const matchesFilters = this.applyFiltersToDocument(doc);
+
+        // A document must match both the search query and the filters to be included
+        return matchesSearchQuery && matchesFilters;
+      }).sort((a, b) => {
+        switch (this.sortingOption.value) {
+          case 'title-asc':
+            return a.title.localeCompare(b.title);
+          case 'title-desc':
+            return b.title.localeCompare(a.title);
+          case 'date-asc':
+            return this.parseDate(a.date) - this.parseDate(b.date);
+          case 'date-desc':
+            return this.parseDate(b.date) - this.parseDate(a.date);
+          case 'area-asc':
+            return a.area.localeCompare(b.area);
+          case 'area-desc':
+            return b.area.localeCompare(a.area);
+          case 'subject-asc':
+            return a.subject.localeCompare(b.subject);
+          case 'subject-desc':
+            return b.subject.localeCompare(a.subject);
+          default:
+            return 0;
+        };
       });
     },
   },
@@ -188,6 +255,11 @@ export default {
     },
     goToDetails(id) {
       this.$router.push({ name: 'Details', params: { id } });
+    },
+    parseDate(dateStr) {
+      const parts = dateStr.split('/');
+      // Note: months are 0-based in JavaScript Date
+      return new Date(parts[2], parts[1] - 1, parts[0]);
     },
     truncateAbstract(abstract) {
       if (abstract.length > 455) {

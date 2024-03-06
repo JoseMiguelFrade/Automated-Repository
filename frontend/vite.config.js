@@ -11,8 +11,7 @@ export default defineConfig({
       {
         template: {
           compilerOptions: {
-            isCustomElement: (tag) => ['v-list-item-content'].includes(tag),
-            isCustomElement: (tag) => ['v-subheader'].includes(tag),
+            isCustomElement: (tag) => ['v-subheader', 'v-list-item-content'].includes(tag),
           }
         }
       }

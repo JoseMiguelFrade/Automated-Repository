@@ -182,7 +182,8 @@ def update_repo():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     accepted_files_dir = os.path.join(base_dir, "accepted_files")
     rejected_files_dir = os.path.join(base_dir, "rejected_files")
-    specified_subdir = "data.europa.eu" 
+    specified_subdir = "data.europa.eu"
+    #specified_subdir = "diariodarepublica.pt" 
     crawling_test_dir = os.path.join(base_dir, "crawling_test", specified_subdir)
     os.makedirs(accepted_files_dir, exist_ok=True)
     os.makedirs(rejected_files_dir, exist_ok=True)
@@ -280,7 +281,7 @@ def update_document(id):
             updated_related_docs = []
             for doc in update_data['related_docs']:
                 # Extract individual documents from the formatted string
-                extracted_docs = doc.replace('|', ' ').split(' ')
+                extracted_docs = doc.split('|')
                 for extracted_doc in extracted_docs:
                     updated_related_docs.append(extracted_doc.strip('<>')) # Remove any leading/trailing angle brackets
             update_data['related_docs'] = updated_related_docs
