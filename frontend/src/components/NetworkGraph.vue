@@ -92,11 +92,14 @@ export default {
                 'Transport': '#F40404', // Vermelho
                 'Aviation': '#F16868', // Salmon
                 'Electronics': '#6E2C00 ', // Castanho
+                'Cybersecurity': '#B9770E', // Gold
                 'General': '#9E9E9E', // Cinza
             },
             nodeFormats: {
                 'Portugal': 'square',
                 'European Union': 'dot',
+                'European Commission': 'dot',
+                'EU': 'dot',
                 'Other': 'triangle'
             },
         };

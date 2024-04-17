@@ -36,12 +36,17 @@ def extract_text_from_pdf_with_pdfminer(pdf_path="", pdf="",max_tokens=700):
 request_count = 0  # Global counter for requests
 
 def analyze_document(pdf_path):
+    print("uaigshfgusfaufgsha")
     global request_count
     pdf_text = extract_text_from_pdf_with_pdfminer(pdf_path)
-
-    client = openai.OpenAI()
-
+    print("aqui")
+    try:
+        client = openai.OpenAI()
+    except Exception as e:
+        print(f"Error creating client: {e}")
+        return "An error occurred while creating the OpenAI client."
     # Switch between models based on request count
+    print("ojk")
     if request_count % 10 < 4:
         model = "gpt-3.5-turbo-1106"
     else:
@@ -51,7 +56,7 @@ def analyze_document(pdf_path):
         model=model,
         messages=[
             {"role": "system", "content": "You are a helpful assistant. Always respond in the format 'field:<field_value>'."},
-            {"role": "user", "content": f"Analyze the following document extract: '{pdf_text}'. First, determine if it is related to IT/cybersecurity/data privacy/AI. If it is not related, respond with 'is_related:<no>'. If it is related, provide structured information with the following format (if no related_docs, the value for related_docs is <none>) (use English to write the Abstract and Type): 'is_related:<yes>#issuer:<issuer_name>#origin:<origin>#type:<Norm/Law/Regulation/Treaty/...>#subject:<Privacy/Governance/Security/...>#date:<date in dd/mm/yyyy format>#area:<Finance/Healthcare/General/Energy/...>#title:<document_title>#Related_Docs:doc1|doc2|doc3#abstract:<brief_summary (80 tokens max)>'."}
+            {"role": "user", "content": f"Analyze the following document extract: '{pdf_text}'. First, determine if it is related to IT/cybersecurity/data privacy/AI. If it is not related, respond with 'is_related:<no>'. If it is related, provide structured information with the following format (if no related_docs, the value for related_docs is <none>) (use English to write the Abstract and Type): 'is_related:<yes>#issuer:<issuer_name>#origin:<origin>#type:<Norm/Law/Regulation>#subject:<Privacy/Governance/Cyberecurity>#date:<date in dd/mm/yyyy format>#area:<Finance/Healthcare/General/Energy/...>#title:<document_title>#Related_Docs:doc1|doc2|doc3#abstract:<brief_summary (80 tokens max)>'."}
         ],
         temperature=0.4,
         max_tokens=280,

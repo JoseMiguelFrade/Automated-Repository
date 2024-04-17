@@ -182,8 +182,8 @@ def update_repo():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     accepted_files_dir = os.path.join(base_dir, "accepted_files")
     rejected_files_dir = os.path.join(base_dir, "rejected_files")
-    specified_subdir = "data.europa.eu"
-    #specified_subdir = "diariodarepublica.pt" 
+    #specified_subdir = "data.europa.eu"
+    specified_subdir = "diariodarepublica.pt" 
     crawling_test_dir = os.path.join(base_dir, "crawling_test", specified_subdir)
     os.makedirs(accepted_files_dir, exist_ok=True)
     os.makedirs(rejected_files_dir, exist_ok=True)

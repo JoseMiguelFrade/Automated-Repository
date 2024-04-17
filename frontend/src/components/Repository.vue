@@ -116,6 +116,7 @@
 
 <script>
 import axios from 'axios';
+import { mapState, mapMutations } from 'vuex';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -123,24 +124,24 @@ export default {
   name: 'Repository',
   data() {
     return {
-
+      documents: [], // All fetched documents
       typeOptions: ['Law', 'Directive', 'Regulation', 'Other'],
       issuerOptions: ['EU', 'Diário da República', 'Other'],
       originOptions: ['EU', 'Portugal', 'Other'],
-      subjectOptions: ['IT', 'Cybersecurity', 'Privacy', 'Digital Rights', 'AI', 'Other'],
-      areaOptions: ['General', 'Defense', 'Healthcare', 'Finance', 'Energy', 'Other'],
+      subjectOptions: ['Cybersecurity', 'Data Privacy', 'Governance', 'Other'],
+      areaOptions: ['General', 'Defense', 'Healthcare', 'Finance', 'Energy', 'Cybersecurity','AI','Transport','Digital Rights','Justice','Other'],
       documents: [],
       searchQuery: '',
-      currentPage: 1,
+      //currentPage: 1,
       itemsPerPage: 15,
       dialog: false,
-      filters: {
-        type: [],
-        subject: [],
-        area: [],
-        issuer: [],
-        origin: []
-      },
+      // filters: {
+      //   type: [],
+      //   subject: [],
+      //   area: [],
+      //   issuer: [],
+      //   origin: []
+      // },
       tempFilters: {
         type: [],
         subject: [],
@@ -148,7 +149,7 @@ export default {
         issuer: [],
         origin: []
       },
-      sortingOption: { value: 'title-asc', text: 'Title Ascending' },// default sorting option
+      //sortingOption: { value: 'title-asc', text: 'Title Ascending' },// default sorting option
       sortingOptions: [
         { value: 'title-asc', text: 'Title Ascending' },
         { value: 'title-desc', text: 'Title Descending' },
@@ -162,6 +163,35 @@ export default {
     };
   },
   computed: {
+    filters: {
+    get() {
+      // Getter: Return the filters object from Vuex state
+      return this.$store.state.filters;
+    },
+    set(value) {
+      // Setter: Commit a mutation to update filters in the Vuex store
+      this.$store.commit('setFilters', value);
+    }
+  },
+
+    currentPage: {
+    get() {
+      return this.$store.state.currentPage;
+    },
+    set(value) {
+      this.$store.commit('setCurrentPage', value);
+    }
+  },
+  sortingOption: {
+    get() {
+      return this.$store.state.sortingOption;
+    },
+    set(value) {
+      this.$store.commit('setSortingOption', value);
+    }
+  
+  },
+
     totalPages() {
       return Math.ceil(this.filteredDocuments.length / this.itemsPerPage);
     },
@@ -202,50 +232,61 @@ export default {
             return 0;
         };
       });
+     
     },
   },
   mounted() {
     this.fetchDocuments();
+    this.setCurrentPage(this.currentPage);
+    this.setFilters(this.filters);
+    this.setSortingOption(this.sortingOption);
   },
   methods: {
+    ...mapMutations(['setCurrentPage', 'setFilters','setSortingOption']),
     async fetchDocuments() {
       try {
         const response = await axios.get(`${apiUrl}/get-documents`);
         this.documents = response.data.documents;
+        //this.applyFilters();
       } catch (error) {
         console.error('Error fetching documents:', error);
       }
     },
     applyFiltersToDocument(doc) {
-      // Helper function to determine if a document matches the "Other" criteria for a given category
-      const matchesOther = (categoryOptions, docValue, selectedFilters) => {
+    // Helper function to determine if a document matches the "Other" criteria for a given category
+    const matchesOther = (categoryOptions, docValues, selectedFilters) => {
         const lowerCaseOptions = categoryOptions.map(option => option.toLowerCase());
+        // Ensure docValues is an array to simplify the logic (split if it's a string with '/')
+        const docValuesArray = typeof docValues === 'string' ? docValues.split('/') : [docValues];
         const isOtherSelected = selectedFilters.includes('Other');
-        const matchesPredefinedOption = lowerCaseOptions.includes(docValue.toLowerCase());
+        const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue.toLowerCase()));
         // If "Other" is selected but the document matches a predefined option, return false
         return isOtherSelected && !matchesPredefinedOption;
-      };
+    };
 
-      // Checks if the document matches selected filters or the "Other" criteria for each category
-      const matchesType = !this.tempFilters.type.length ||
-        this.tempFilters.type.some(type => type === 'Other' ? matchesOther(this.typeOptions, doc.type, this.tempFilters.type) : doc.type.toLowerCase() === type.toLowerCase());
+    // Split document categories for area and issuer if they're in 'Category1/Category2' format
+    const docAreas = typeof doc.area === 'string' ? doc.area.split('/') : [doc.area];
+    const docIssuers = typeof doc.issuer === 'string' ? doc.issuer.split('/') : [doc.issuer];
 
-      const matchesIssuer = !this.tempFilters.issuer.length ||
-        this.tempFilters.issuer.some(issuer => issuer === 'Other' ? matchesOther(this.issuerOptions, doc.issuer, this.tempFilters.issuer) : doc.issuer.toLowerCase() === issuer.toLowerCase());
+    // Function to check match for single/multi categories against filters
+    const matchesCategory = (docCategories, filterCategories, categoryOptions) => {
+        return !filterCategories.length || filterCategories.some(filterCategory => 
+            docCategories.some(docCategory => 
+                filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory.toLowerCase() === filterCategory.toLowerCase()));
+    };
 
-      const matchesOrigin = !this.tempFilters.origin.length ||
-        this.tempFilters.origin.some(origin => origin === 'Other' ? matchesOther(this.originOptions, doc.origin, this.tempFilters.origin) : doc.origin.toLowerCase() === origin.toLowerCase());
+    // Checks if the document matches selected filters or the "Other" criteria for each category
+    const matchesType = !this.filters.type.length || this.filters.type.includes(doc.type.toLowerCase());
+    const matchesIssuer = matchesCategory(docIssuers, this.filters.issuer, this.issuerOptions);
+    const matchesOrigin = !this.filters.origin.length || this.filters.origin.includes(doc.origin.toLowerCase());
+    const matchesSubject = !this.filters.subject.length || this.filters.subject.includes(doc.subject.toLowerCase());
+    const matchesArea = matchesCategory(docAreas, this.filters.area, this.areaOptions);
 
-      const matchesSubject = !this.tempFilters.subject.length || this.tempFilters.subject.some(subject => subject === 'Other' ? matchesOther(this.subjectOptions, doc.subject, this.tempFilters.subject) : doc.subject.toLowerCase() === subject.toLowerCase());
-
-      const matchesArea = !this.tempFilters.area.length || this.tempFilters.area.some(area => area === 'Other' ? matchesOther(this.areaOptions, doc.area, this.tempFilters.area) : doc.area.toLowerCase() === area.toLowerCase());
-
-
-
-      // Combine all match conditions. A document must satisfy all category conditions to be included.
-      return matchesType && matchesIssuer && matchesOrigin && matchesSubject && matchesArea; // Add other conditions here using && operator
-    },
+    // Combine all match conditions. A document must satisfy all category conditions to be included.
+    return matchesType && matchesIssuer && matchesOrigin && matchesSubject && matchesArea;
+},
     applyFilters() {
+      
       this.filters = { ...this.tempFilters };
       this.dialog = false;
     },
@@ -267,6 +308,29 @@ export default {
       }
       return abstract;
     }
+  },
+  watch: {
+
+    currentPage: {
+      handler(value) {
+        this.setCurrentPage(value);
+      },
+      immediate: true,
+    },
+    filters: {
+      handler(value) {
+        console.log(value);
+        this.setFilters(value);
+      },
+      deep: true,
+      immediate: true,
+    },
+    sortingOption: {
+      handler(value) {
+        this.setSortingOption(value);
+      },
+      immediate: true,
+    },
   }
 };
 </script>
