@@ -1,8 +1,8 @@
 <template>
     <v-app-bar app>
         <v-toolbar-title style="color: #ffffff; font-weight: bold;">
-      Cyberlaw
-    </v-toolbar-title>
+            Cyberlaw
+        </v-toolbar-title>
         <v-spacer></v-spacer>
 
         <!-- Home Button -->
@@ -30,8 +30,8 @@
             </template>
         </v-menu>
 
-                <!-- Repository Menu -->
-                <v-menu>
+        <!-- Repository Menu -->
+        <v-menu>
             <template v-slot:activator="{ props }">
                 <v-btn color="primary" v-bind="props">Repository</v-btn>
             </template>
@@ -39,11 +39,14 @@
                 <v-list-item :to="{ name: 'Repository' }">
                     <v-list-item-title>Open</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="UpdateRepo">
+                <v-list-item :to="{ name: 'Update' }">
                     <v-list-item-title>Update</v-list-item-title>
                 </v-list-item>
                 <v-list-item :to="{ name: 'NetworkGraph' }">
                     <v-list-item-title>Graph</v-list-item-title>
+                </v-list-item>
+                <v-list-item :to="{ name: 'Statistics' }">
+                    <v-list-item-title>Statistics</v-list-item-title>
                 </v-list-item>
             </v-list>
         </v-menu>
@@ -52,7 +55,7 @@
     </v-app-bar>
 </template>
 
-  
+
 <script>
 import axios from 'axios';
 export default {
@@ -104,7 +107,7 @@ export default {
                 });
         },
         UpdateRepo() {
-           
+
             const apiUrl = import.meta.env.VITE_API_URL;
 
             axios.post(`${apiUrl}/update-repo`)
@@ -120,9 +123,10 @@ export default {
     }
 };
 </script>;
-  
+
 <style>
 .v-app-bar {
-  background: linear-gradient(to right, #77aee5, #ffffff) !important; /* Adjust gradient colors as needed */
+    background: linear-gradient(to right, #77aee5, #ffffff) !important;
+    /* Adjust gradient colors as needed */
 }
 </style>

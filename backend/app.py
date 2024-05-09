@@ -177,14 +177,18 @@ def upload_keywords():
 @app.route('/update-repo', methods=['POST'])
 def update_repo():
     stop_crawler()
-
+    subdir = request.json.get('subdir')
+    total_queries = int(request.json.get('total_queries', 10))  # Default to 10 if not provided
+    gpt_3_5_count = int(request.json.get('gpt_3_5_count', 4))  # Default to 4 if not provided
+    if not subdir:
+        return jsonify({'error': 'Missing subdir parameter'}), 400
     # Define directories
     base_dir = os.path.dirname(os.path.abspath(__file__))
     accepted_files_dir = os.path.join(base_dir, "accepted_files")
     rejected_files_dir = os.path.join(base_dir, "rejected_files")
     #specified_subdir = "data.europa.eu"
-    specified_subdir = "diariodarepublica.pt" 
-    crawling_test_dir = os.path.join(base_dir, "crawling_test", specified_subdir)
+    #specified_subdir = "diariodarepublica.pt" 
+    crawling_test_dir = os.path.join(base_dir, "crawling_test", subdir)
     os.makedirs(accepted_files_dir, exist_ok=True)
     os.makedirs(rejected_files_dir, exist_ok=True)
 
@@ -193,7 +197,7 @@ def update_repo():
 
     for pdf_path in pdf_files:
         # Analyze the document using the function from gpt_repo
-        result = gpt_repo.analyze_document(pdf_path)
+        result = gpt_repo.analyze_document(pdf_path,total_queries, gpt_3_5_count)
         result_dict = parse_result_to_dict(result)
 
         # Check if the document is related
@@ -384,6 +388,151 @@ def regenerate_doc():
         regenerated_text = {'error': 'Invalid response format'}
 
     return jsonify({'regeneratedText': regenerated_text}), 200
+
+@app.route('/areas', methods=['GET'])
+def get_areas():
+    pipeline = [
+        # Split the 'area' field if it contains '/'
+        {"$project": {
+            "areas": {
+                "$split": ["$area", "/"]
+            }
+        }},
+        # Unwind the array to handle documents with multiple areas
+        {"$unwind": "$areas"},
+        # Trim any leading or trailing whitespace
+        {"$project": {
+            "area": {"$trim": {"input": "$areas"}}
+        }},
+        # Group by the trimmed 'area' and count each one
+        {"$group": {"_id": "$area", "count": {"$sum": 1}}}
+    ]
+    results = documents_collection.aggregate(pipeline)
+    data = {result["_id"]: result["count"] for result in results}
+    return jsonify(data)
+
+@app.route('/document_counts_by_year', methods=['GET'])
+def get_document_counts_by_year():
+    origin = request.args.get('origin')
+    pipeline = []
+
+    # Adjust the $match stage to include both "EU" and "European Union" if the origin is "EU"
+    if origin:
+        if origin.lower() == 'eu':
+            pipeline.append({"$match": {"origin": {"$in": ["EU", "European Union"]}}})
+        elif origin.lower() != 'all':
+            pipeline.append({"$match": {"origin": origin}})
+
+    # Continue with the rest of the pipeline
+    pipeline.extend([
+        {
+            "$project": {
+                "year": {
+                    "$dateToString": {
+                        "format": "%Y",
+                        "date": {
+                            "$dateFromString": {
+                                "dateString": "$date",
+                                "format": "%d/%m/%Y"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": "$year",
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        }
+    ])
+
+    results = documents_collection.aggregate(pipeline)
+    data = [{"year": result["_id"], "count": result["count"]} for result in results]
+    return jsonify(data)
+
+@app.route('/area_counts_by_year', methods=['GET'])
+def get_area_counts_by_year():
+    pipeline = [
+        {
+            "$addFields": {
+                "parsedDate": {
+                    "$dateFromString": {
+                        "dateString": "$date",
+                        "format": "%d/%m/%Y"
+                    }
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "year": {
+                    "$dateToString": {
+                        "format": "%Y",
+                        "date": "$parsedDate"
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "year": 1,
+                "areas": {"$split": ["$area", "/"]}
+            }
+        },
+        {"$unwind": "$areas"},
+        {
+            "$project": {
+                "year": 1,
+                "area": {"$trim": {"input": "$areas"}}
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "year": "$year",
+                    "area": "$area"
+                },
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$group": {
+                "_id": "$_id.year",
+                "areas": {
+                    "$push": {
+                        "area": "$_id.area",
+                        "count": "$count"
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        }
+    ]
+    results = documents_collection.aggregate(pipeline)
+    data = [
+        {
+            "year": result["_id"],
+            "areas": result["areas"]
+        } for result in results
+    ]
+    return jsonify(data)
+
+@app.route('/list-subdirs', methods=['GET'])
+def list_subdirs():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    crawling_test_dir = os.path.join(base_dir, "crawling_test")
+    
+    # List only directories
+    subdirs = [d for d in os.listdir(crawling_test_dir) if os.path.isdir(os.path.join(crawling_test_dir, d))]
+    
+    return jsonify(subdirs)
 
 
 if __name__ == '__main__':

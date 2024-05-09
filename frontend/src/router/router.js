@@ -6,6 +6,8 @@ import Details from '@/components/Details.vue';
 import EditDocument from '@/components/EditDocument.vue';
 import Regenerate from '@/components/Regenerate.vue';
 import NetworkGraph from '@/components/NetworkGraph.vue';
+import Statistics from '@/components/Statistics.vue';
+import Update from '@/components/Update.vue';
 
 const routes = [
   {
@@ -42,7 +44,19 @@ const routes = [
     path: '/network-graph',
     name: 'NetworkGraph',
     component: NetworkGraph
+  },
+  {
+    path: '/statistics',
+    name: 'Statistics',
+    component: Statistics
+  },
+  {
+    path: '/update',
+    name: 'Update',
+    component: Update
   }
+
+
 ];
 
 const router = createRouter({

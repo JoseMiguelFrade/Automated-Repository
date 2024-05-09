@@ -35,19 +35,16 @@ def extract_text_from_pdf_with_pdfminer(pdf_path="", pdf="",max_tokens=700):
 
 request_count = 0  # Global counter for requests
 
-def analyze_document(pdf_path):
-    print("uaigshfgusfaufgsha")
+def analyze_document(pdf_path, total_queries, gpt_3_5_count):
     global request_count
     pdf_text = extract_text_from_pdf_with_pdfminer(pdf_path)
-    print("aqui")
     try:
         client = openai.OpenAI()
     except Exception as e:
         print(f"Error creating client: {e}")
         return "An error occurred while creating the OpenAI client."
     # Switch between models based on request count
-    print("ojk")
-    if request_count % 10 < 4:
+    if request_count % total_queries < gpt_3_5_count:
         model = "gpt-3.5-turbo-1106"
     else:
         model = "gpt-4-1106-preview"

@@ -15,7 +15,6 @@
                         placeholder="Enter related documents separated by commas">
                     </v-text-field>
                     <v-textarea v-model="documentDetails.abstract" label="Abstract"></v-textarea>
-                    <v-text-field v-model="documentDetails.pdf_path" label="PDF Path"></v-text-field>
                     <v-btn :disabled="!valid" color="primary" @click="saveDocument">Save</v-btn>
                 </v-form>
             </v-card-text>
@@ -40,7 +39,7 @@ export default {
                 date: '',
                 area: '',
                 abstract: '',
-                pdf_path: ''
+            
             },
             editableRelatedDocs: '',
         }
