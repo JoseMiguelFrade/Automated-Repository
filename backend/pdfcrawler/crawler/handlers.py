@@ -55,10 +55,10 @@ class LocalStoragePDFHandler:
             return None
 
     def contains_keywords(self, pdf_path):
-      #  print("Checking for keywords in", pdf_path)
+        print("Checking for keywords in", pdf_path)
         text = extract_text(pdf_path)
       #  print("Text", text)
-       
+        print("Keywords", self.keywords)
         return any(keyword.lower() in text.lower() for keyword in self.keywords)
 
 
