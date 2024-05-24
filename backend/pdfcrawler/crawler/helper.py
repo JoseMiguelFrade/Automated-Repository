@@ -3,6 +3,7 @@ from functools import lru_cache
 from .proxy import ProxyManager
 import re
 from urllib.parse import urlparse,urlunparse
+import hashlib
 
 pm = ProxyManager()
 log = logging.getLogger(__name__)
@@ -40,6 +41,13 @@ def clean_url(url):
             return m.group(1)
 
     return url
+
+def normalize_url(url):
+    parsed_url = urlparse(url)
+    # Create a new URL without the query and fragment
+    normalized_url = urlunparse(parsed_url._replace(query="", fragment=""))
+    return normalized_url
+
 
 
 def get_content_type(response):
@@ -119,3 +127,13 @@ def parse_result_to_dict(result_str):
    
 
     return result_dict
+
+def compute_md5(file_data):
+    """Compute MD5 hash for the given file data."""
+    hash_md5 = hashlib.md5()
+    hash_md5.update(file_data)
+    return hash_md5.hexdigest()
+
+def format_date(date):
+    """Format date to 'hh:mm:ss dd/mm/yyyy'."""
+    return date.strftime('%H:%M:%S %d/%m/%Y')

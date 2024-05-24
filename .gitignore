@@ -3,3 +3,4 @@ backend/.env
 backend/accepted_files/*
 backend/rejected_files/*
 backend/manual_deleted/*
+backend/duplicated_files/*

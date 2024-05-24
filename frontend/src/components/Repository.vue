@@ -155,6 +155,8 @@ export default {
         { value: 'title-desc', text: 'Title Descending' },
         { value: 'date-asc', text: 'Date Ascending' },
         { value: 'date-desc', text: 'Date Descending' },
+        {value: 'uploaded-date-asc', text: 'Uploaded Date Ascending'},
+        {value: 'uploaded-date-desc', text: 'Uploaded Date Descending'},
         { value: 'area-asc', text: 'Area Ascending' },
         { value: 'area-desc', text: 'Area Descending' },
         { value: 'subject-asc', text: 'Subject Ascending' },
@@ -220,6 +222,10 @@ export default {
             return this.parseDate(a.date) - this.parseDate(b.date);
           case 'date-desc':
             return this.parseDate(b.date) - this.parseDate(a.date);
+          case 'uploaded-date-asc':
+            return this.parseDateUpload(a.upload_date) - this.parseDateUpload(b.upload_date);
+          case 'uploaded-date-desc':
+            return this.parseDateUpload(b.upload_date) - this.parseDateUpload(a.upload_date);	          
           case 'area-asc':
             return a.area.localeCompare(b.area);
           case 'area-desc':
@@ -301,6 +307,14 @@ export default {
       const parts = dateStr.split('/');
       // Note: months are 0-based in JavaScript Date
       return new Date(parts[2], parts[1] - 1, parts[0]);
+    },
+    parseDateUpload(dateStr) {
+     // hh:mm:ss dd/mm/yyyy
+      const parts = dateStr.split(' ');
+      const date = parts[1].split('/');
+      const time = parts[0].split(':');
+      // Note: months are 0-based in JavaScript Date
+      return new Date(date[2], date[1] - 1, date[0], time[0], time[1], time[2]);
     },
     truncateAbstract(abstract) {
       if (abstract.length > 455) {

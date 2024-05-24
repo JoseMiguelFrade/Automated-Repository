@@ -60,6 +60,7 @@ export default {
         fetchAreaData() {
             axios.get(`${apiUrl}/areas`)
                 .then(response => {
+                    console.log(response.data);
                     const areaData = response.data;
                     // Create array of area and count, sort it, then separate keys and values
                     const sortedAreaData = Object.entries(areaData)

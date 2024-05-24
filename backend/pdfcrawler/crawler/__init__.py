@@ -20,10 +20,9 @@ logging.basicConfig(
 requests_downloader = RequestsDownloader()
 
 
-def crawl(app, stop_event, socketio, url, output_dir, depth=2, method="rendered-all", gecko_path="C:/Users/josem/Desktop/CyberlawRepo/geckodriver.exe", page_name=None, custom_stats_handler=None, custom_process_handler=None):
+def crawl(app, stop_event, socketio, url, output_dir, depth=2, method="rendered-all", gecko_path="C:/Users/josem/Desktop/CyberlawRepo/geckodriver.exe", page_name=None, custom_stats_handler=None, custom_process_handler=None, crawl_in_depth=False):
     head_handlers = {}
     get_handlers = {}
-
     # get name of page for sub-directories etc. if not custom name given
     if page_name is None:
         page_name = urlparse(url).netloc
@@ -47,8 +46,10 @@ def crawl(app, stop_event, socketio, url, output_dir, depth=2, method="rendered-
 
     crawler = Crawler(
         app = app,
+        base_url=url,
         stop_event=stop_event,
         socketio=socketio,
+        crawl_in_depth=crawl_in_depth,
         downloader=requests_downloader,
         head_handlers=head_handlers,
         get_handlers=get_handlers,
@@ -57,5 +58,6 @@ def crawl(app, stop_event, socketio, url, output_dir, depth=2, method="rendered-
         gecko_path=gecko_path,
         process_handler=process_handler
     )
+    print(f"Crawl in depth: {crawl_in_depth}")
     crawler.crawl(url, depth)
 

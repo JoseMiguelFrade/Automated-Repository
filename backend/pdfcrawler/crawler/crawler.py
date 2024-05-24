@@ -1,16 +1,18 @@
-from .helper import get_content_type, call, clean_url
+from .helper import get_content_type, call, clean_url, normalize_url
 from .crawl_methods import get_hrefs_html, get_hrefs_js_simple, ClickCrawler
 from flask_socketio import emit
 from flask import current_app
 import time
 
 class Crawler:
-    def __init__(self, app, stop_event, socketio, downloader, get_handlers=None, head_handlers=None, follow_foreign_hosts=False, crawl_method="normal", gecko_path="geckodriver", process_handler=None):
+    def __init__(self, app, stop_event, socketio, downloader, get_handlers=None, head_handlers=None, follow_foreign_hosts=False, crawl_method="normal", gecko_path="geckodriver", process_handler=None, base_url=None, crawl_in_depth=False):
 
         # Crawler internals test 
         self.app = app
+        self.base_url = base_url
         self.stop_event = stop_event
         self.downloader = downloader
+        self.crawl_in_depth = crawl_in_depth
         #self.stop_crawler = stop_crawler
         #self.initial_url = None
         self.socketio = socketio
@@ -41,7 +43,9 @@ class Crawler:
         if self.stop_event.is_set():
             return       
         url = clean_url(url)
-
+       # print(f"base url: {self.base_url}")
+        #base_url = clean_url(self.base_url)
+        # print(f"Base url: {base_url}")
         # if self.initial_url is None:
         #     self.initial_url = url
 
@@ -71,7 +75,7 @@ class Crawler:
         head_handler = self.head_handlers.get(content_type.strip())
         if head_handler:
             head_handler.handle(response, depth, previous_url, local_name, local_name)
-        #aaaaa
+     
         if content_type == "text/html" and depth > 0 and follow:
             print(f"depth: {depth}, follow: {follow}")
             urls = self.get_urls(response)
@@ -80,8 +84,23 @@ class Crawler:
             for next_url in urls:
                 contains_pdf = 'pdf' in next_url['url'].lower()
                 new_depth = depth if contains_pdf else depth - 1
-                if new_depth > 0:
-                    self.crawl(next_url['url'], new_depth, previous_url=final_url, follow=next_url['follow'])
+                if self.base_url is not None and self.crawl_in_depth:
+                    #print("Aqui")
+                    print(f"Base url: {normalize_url(self.base_url).lower()}")
+                    print(f"Next url: {normalize_url(next_url['url']).lower()}")
+                    if (normalize_url(self.base_url).lower() not in normalize_url(next_url['url']).lower()) and  not contains_pdf:
+                        print("False")
+                        new_follow = False
+                    else:
+                        #print("True")
+                        new_follow = True
+                if not self.crawl_in_depth:
+                    new_follow = True
+                if new_depth > 0 and new_follow:
+                    try:
+                        self.crawl(next_url['url'], new_depth, previous_url=final_url, follow=next_url['follow'])
+                    except Exception as e:
+                        print(f"Error crawling {next_url['url']}: {e}")
         else:
             self.handled.add(final_url)
             print("no crawling done")
