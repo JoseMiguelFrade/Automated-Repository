@@ -8,6 +8,7 @@ import Regenerate from '@/components/Regenerate.vue';
 import NetworkGraph from '@/components/NetworkGraph.vue';
 import Statistics from '@/components/Statistics.vue';
 import Update from '@/components/Update.vue';
+import NewDocuments from '@/components/NewDocuments.vue';
 
 const routes = [
   {
@@ -16,9 +17,10 @@ const routes = [
     component: Home
   },
   {
-    path: '/crawler',
+    path: '/crawler:filename?',
     name: 'Crawler',
-    component: CrawlerMenu
+    component: CrawlerMenu,
+    props: route => ({ urls: route.query.urls }),
   },
   {
     path: '/repository',
@@ -54,6 +56,11 @@ const routes = [
     path: '/update',
     name: 'Update',
     component: Update
+  },
+  {
+    path: '/new-documents',
+    name: 'NewDocuments',
+    component: NewDocuments
   }
 
 

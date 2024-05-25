@@ -26,8 +26,16 @@
         <!-- Crawler Menu -->
         <v-menu>
             <template v-slot:activator="{ props }">
-                <v-btn color="primary" v-bind="props" to="/crawler">Crawler</v-btn>
+                <v-btn color="primary" v-bind="props">Upload</v-btn>
             </template>
+            <v-list>
+                <v-list-item :to="{name: 'Crawler'}">
+                    <v-list-item-title>Crawler</v-list-item-title>
+                </v-list-item>
+                <v-list-item :to="{name: 'NewDocuments'}">
+                    <v-list-item-title>New Documents</v-list-item-title>
+                </v-list-item>
+            </v-list>
         </v-menu>
 
         <!-- Repository Menu -->

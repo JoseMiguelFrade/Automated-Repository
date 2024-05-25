@@ -18,6 +18,7 @@ import gpt_repo  # Importing the gpt_repo module
 from pymongo import MongoClient
 from pdfcrawler.crawler.helper import parse_result_to_dict, compute_md5, format_date
 from bson.objectid import ObjectId
+from RSSConsumer import parse_rss_feed_EurLex, parse_rss_feed_DRE, extract_eurlex_links, extract_dre_links
 import gridfs
 import shutil
 from io import BytesIO
@@ -57,6 +58,20 @@ def start_crawler():
     depth = request_data.get('depth', 1)
     crawl_in_depth = request_data.get('crawl_in_depth', False)
     print(f"crawl_in_depth: {crawl_in_depth}")
+
+    # Check if the url_list contains a single concatenated URL string
+    if len(url_list) == 1 and ('http://' in url_list[0] or 'https://' in url_list[0]):
+        urls = url_list[0].split('http://')
+        url_list = []
+        for url in urls:
+            if url:
+                url_list.append('http://' + url if 'http://' not in url else url)
+        urls = url_list[0].split('https://')
+        url_list = []
+        for url in urls:
+            if url:
+                url_list.append('https://' + url if 'https://' not in url else url)
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(current_dir, 'crawling_test')
 
@@ -578,6 +593,37 @@ def list_subdirs():
     subdirs = [d for d in os.listdir(crawling_test_dir) if os.path.isdir(os.path.join(crawling_test_dir, d))]
     
     return jsonify(subdirs)
+
+@app.route('/fetch-recent-documents', methods=['GET'])
+def fetch_recent_documents():
+    try:
+        eurlex_items = parse_rss_feed_EurLex()
+        tretas_items = parse_rss_feed_DRE()
+        all_items = eurlex_items + tretas_items
+        return jsonify(all_items)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/pre-crawl', methods=['POST'])
+def pre_crawl():
+    data = request.json
+    print(f"Received data for pre-crawl: {data}")
+
+    eurlex_links = [item['link'] for item in data if item['source'] == 'EurLex']
+    dre_links = [item['link'] for item in data if item['source'] == 'DRE']
+
+    eurlex_extracted_links = extract_eurlex_links(eurlex_links)
+    dre_extracted_links = extract_dre_links(dre_links)
+
+    all_links = eurlex_extracted_links + dre_extracted_links
+    print(f"All extracted links: {all_links}")
+
+    response = jsonify({
+        'urls': all_links if all_links else [],  # Ensure it's an array
+        'message': 'Data processed successfully'
+    })
+    return response
 
 
 if __name__ == '__main__':

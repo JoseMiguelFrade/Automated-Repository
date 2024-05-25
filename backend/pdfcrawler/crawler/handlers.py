@@ -2,16 +2,16 @@ import csv
 import os
 import uuid
 from urllib.parse import urlparse
+import threading
 import psutil
 from pdfminer.high_level import extract_text
 
-
+lock = threading.Lock()
 
 class LocalStoragePDFHandler:
     def __init__(self, directory, subdirectory):
         self.directory = directory
         self.subdirectory = subdirectory
-        # Load keywords from file
         self.keywords = []
         current_dir = os.path.dirname(os.path.abspath(__file__))
         keywords_file_path = os.path.join(current_dir, 'keywords', 'keywords.txt')
@@ -20,47 +20,46 @@ class LocalStoragePDFHandler:
         if os.path.exists(keywords_file_path):
             with open(keywords_file_path, 'r', encoding='utf-8') as f:
                 for line in f:
-                    self.keywords.append(line.strip())
+                    keyword = line.strip()
+                    if keyword:
+                        self.keywords.append(line.strip())
         else:
             print("Keywords file not found at", keywords_file_path)
 
-
     def handle(self, response, *args, **kwargs):
-        #print("Handling", response.url)
         parsed = urlparse(response.url)
-        #print("Parsed", parsed)
         filename = str(uuid.uuid4()) + ".pdf"
-        #print("Filename", filename)
         subdirectory = self.subdirectory or parsed.netloc
         directory = os.path.join(self.directory, subdirectory)
+        
         try:
             os.makedirs(directory, exist_ok=True)
         except:
             print("Error creating directory")
-        # Temporarily save the PDF to a unique path
+        
         temp_path = _ensure_unique(os.path.join(directory, f"temp_{filename}"))
+        
         with open(temp_path, 'wb') as f:
             f.write(response.content)
-       # print("Saved to", temp_path)
+        
         # Check if the PDF contains any of the keywords
         if self.contains_keywords(temp_path):
-           # print("Contains keywords")
-            # If keywords are found, rename and save the PDF permanently
             final_path = _ensure_unique(os.path.join(directory, filename))
             os.rename(temp_path, final_path)
             return final_path
         else:
-            # If no keywords are found, do not save the PDF
             os.remove(temp_path)
             return None
 
     def contains_keywords(self, pdf_path):
-        print("Checking for keywords in", pdf_path)
         text = extract_text(pdf_path)
-      #  print("Text", text)
-        print("Keywords", self.keywords)
-        return any(keyword.lower() in text.lower() for keyword in self.keywords)
-
+        print(f"Keywords to search for: {self.keywords}")  # Debug: print the keywords
+        
+        for keyword in self.keywords:
+            if keyword.lower() in text.lower():
+                print(f"Keyword found: {keyword}")  # Debug: print the found keyword
+                return True
+        return False
 
 class CSVStatsPDFHandler:
     _FIELDNAMES = ['filename', 'local_name', 'url', 'linking_page_url', 'size', 'depth']
@@ -82,7 +81,7 @@ class CSVStatsPDFHandler:
                             list_handled.append(row[2])
         return list_handled
 
-    def handle(self, response, depth, previous_url, local_name,*args, **kwargs):
+    def handle(self, response, depth, previous_url, local_name, *args, **kwargs):
         if local_name:
             parsed_url = urlparse(response.url)
             name = self.name or parsed_url.netloc
@@ -104,9 +103,7 @@ class CSVStatsPDFHandler:
                 }
                 writer.writerow(row)
 
-
 class ProcessHandler:
-
     def __init__(self):
         self.process_list = []
 
@@ -114,10 +111,7 @@ class ProcessHandler:
         self.process_list.append(int(pid))
 
     def kill_all(self):
-
-        # kill all current processes in list as well as child processes
         for pid in self.process_list:
-
             try:
                 parent_process = psutil.Process(int(pid))
             except psutil._exceptions.NoSuchProcess:
@@ -131,7 +125,6 @@ class ProcessHandler:
 
         self.process_list = []
 
-
 def get_filename(parsed_url):
     filename = parsed_url.path.split('/')[-1]
     if parsed_url.query:
@@ -144,7 +137,6 @@ def get_filename(parsed_url):
         filename = str(uuid.uuid4())[:8] + ".pdf"
 
     return filename
-
 
 def _ensure_unique(path):
     if os.path.isfile(path):
