@@ -36,6 +36,7 @@ def get_hrefs_html(response, follow_foreign_hosts=False, pdf_only=True):
                     url = urljoin(response.url, parsed_url.path)
                     parsed_url = urlparse(url)
                 if parsed_response_url.netloc != parsed_url.netloc and not follow_foreign_hosts:
+                    print("parsed_response_url.netloc: ", parsed_response_url.netloc)
                     follow = False
                 urls.add(url)
                 output.append({"url": url, "follow": follow})

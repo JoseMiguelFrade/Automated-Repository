@@ -34,12 +34,16 @@ class Crawler:
         self.crawl_method = crawl_method
 
         # load already handled files from folder if available
-        for k, Handler in self.head_handlers.items():
-            handled_list = Handler.get_handled_list()
-            for handled_entry in handled_list:
-                self.handled.add(clean_url(handled_entry))
+        # for k, Handler in self.head_handlers.items():
+        #     print(Handler)
+        #     handled_list = Handler.get_handled_list()
+        #     for handled_entry in handled_list:
+        #         print("adicionei este url a lista !!!!!!!!!!!!!!!!!!!!")
+        #         print(handled_entry)
+        #         self.handled.add(clean_url(handled_entry))
 
     def crawl(self, url, depth, previous_url=None, follow=True):
+        #print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         if self.stop_event.is_set():
             return       
         url = clean_url(url)
@@ -50,22 +54,26 @@ class Crawler:
         #     self.initial_url = url
 
         if url in self.handled and url[-4:] in self.file_endings_exclude:
+            #print(f"Already handled {url}")
             return
         print(f"Crawling {url} with depth {depth} and follow {follow}")
         response = call(self.session, url)
-        print(f"Response: {response}")
+      #  print(f"Response: {response}")
         if not response:
             return
 
         final_url = clean_url(response.url)
 
         if final_url in self.handled or final_url[-4:] in self.file_endings_exclude:
+         #   print(f"Already handled {final_url}")
             return
 
         with self.app.app_context():
             self.socketio.emit('new_url', {'url': final_url})
 
         content_type = get_content_type(response)
+        #print(f"Content type: {content_type}")
+        #print(f"response: {response} response.url: {response.url}")
         local_name = None
 
         get_handler = self.get_handlers.get(content_type)
@@ -80,6 +88,7 @@ class Crawler:
             print(f"depth: {depth}, follow: {follow}")
             urls = self.get_urls(response)
             self.handled.add(final_url)
+           # print(self.handled)
 
             for next_url in urls:
                 contains_pdf = 'pdf' in next_url['url'].lower()
@@ -89,7 +98,7 @@ class Crawler:
                     print(f"Base url: {normalize_url(self.base_url).lower()}")
                     print(f"Next url: {normalize_url(next_url['url']).lower()}")
                     if (normalize_url(self.base_url).lower() not in normalize_url(next_url['url']).lower()) and  not contains_pdf:
-                        print("False")
+                     #   print("False")
                         new_follow = False
                     else:
                         #print("True")
@@ -98,6 +107,7 @@ class Crawler:
                     new_follow = True
                 if new_depth > 0 and new_follow:
                     try:
+                    #    print(f"Next url: {next_url['url']}")
                         self.crawl(next_url['url'], new_depth, previous_url=final_url, follow=next_url['follow'])
                     except Exception as e:
                         print(f"Error crawling {next_url['url']}: {e}")

@@ -6,7 +6,7 @@ import threading
 import psutil
 from pdfminer.high_level import extract_text
 
-lock = threading.Lock()
+#lock = threading.Lock()
 
 class LocalStoragePDFHandler:
     def __init__(self, directory, subdirectory):
@@ -27,11 +27,11 @@ class LocalStoragePDFHandler:
             print("Keywords file not found at", keywords_file_path)
 
     def handle(self, response, *args, **kwargs):
+
         parsed = urlparse(response.url)
         filename = str(uuid.uuid4()) + ".pdf"
         subdirectory = self.subdirectory or parsed.netloc
         directory = os.path.join(self.directory, subdirectory)
-        
         try:
             os.makedirs(directory, exist_ok=True)
         except:
@@ -39,9 +39,12 @@ class LocalStoragePDFHandler:
         
         temp_path = _ensure_unique(os.path.join(directory, f"temp_{filename}"))
         
-        with open(temp_path, 'wb') as f:
-            f.write(response.content)
-        
+        try:
+            with open(temp_path, 'wb') as f:
+                f.write(response.content)
+        except:
+            print("Error writing PDF file")
+            return None
         # Check if the PDF contains any of the keywords
         if self.contains_keywords(temp_path):
             final_path = _ensure_unique(os.path.join(directory, filename))

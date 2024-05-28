@@ -61,16 +61,26 @@ def start_crawler():
 
     # Check if the url_list contains a single concatenated URL string
     if len(url_list) == 1 and ('http://' in url_list[0] or 'https://' in url_list[0]):
-        urls = url_list[0].split('http://')
+        concatenated_urls = url_list[0]
+        urls = concatenated_urls.split('http://')
         url_list = []
         for url in urls:
             if url:
-                url_list.append('http://' + url if 'http://' not in url else url)
-        urls = url_list[0].split('https://')
+                if not url.startswith('http://') and not url.startswith('https://'):
+                    url_list.append('http://' + url)
+                else:
+                    url_list.append(url)
+        concatenated_urls = ' '.join(url_list)
+        urls = concatenated_urls.split('https://')
         url_list = []
         for url in urls:
             if url:
-                url_list.append('https://' + url if 'https://' not in url else url)
+                if not url.startswith('http://') and not url.startswith('https://'):
+                    url_list.append('https://' + url)
+                else:
+                    url_list.append(url)
+
+    print("Final URL list:", url_list)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(current_dir, 'crawling_test')
@@ -87,7 +97,6 @@ def start_crawler():
         crawler_threads[thread_id] = thread
 
     return {'message': f'Crawler started for {len(url_list)} URLs'}, 200
-
 @app.route('/stop-crawler', methods=['POST'])
 def stop_crawler():
     stop_event.set()  # Signal all crawlers to stop
