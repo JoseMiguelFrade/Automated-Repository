@@ -83,7 +83,7 @@ def start_crawler():
     print("Final URL list:", url_list)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(current_dir, 'crawling_test')
+    output_dir = os.path.join(current_dir, 'crawlled_files')
 
     queue = Queue()
     for url in url_list:
@@ -136,7 +136,7 @@ def upload_file():
 
     
 
-     #socketio.start_background_task(crawl, app, socketio, url='https://www.ipleiria.pt/', output_dir='C:/Users/josem/Desktop/Webcrawler/backend/pdfcrawler/crawler/crawling_test', method='rendered')
+     #socketio.start_background_task(crawl, app, socketio, url='https://www.ipleiria.pt/', output_dir='C:/Users/josem/Desktop/Webcrawler/backend/pdfcrawler/crawler/crawlled_files', method='rendered')
    
     # return {'message': 'Crawler started'}, 200
 
@@ -174,13 +174,13 @@ def update_repo():
     accepted_files_dir = os.path.join(base_dir, "accepted_files")
     rejected_files_dir = os.path.join(base_dir, "rejected_files")
     duplicated_files_dir = os.path.join(base_dir, "duplicated_files")
-    crawling_test_dir = os.path.join(base_dir, "crawling_test", subdir)
+    crawlled_files_dir = os.path.join(base_dir, "crawlled_files", subdir)
     os.makedirs(accepted_files_dir, exist_ok=True)
     os.makedirs(rejected_files_dir, exist_ok=True)
     os.makedirs(duplicated_files_dir, exist_ok=True)
 
     # Get the list of first 50 PDFs in the specified subdir
-    pdf_files = [os.path.join(crawling_test_dir, f) for f in os.listdir(crawling_test_dir) if f.endswith('.pdf')][:total_queries]
+    pdf_files = [os.path.join(crawlled_files_dir, f) for f in os.listdir(crawlled_files_dir) if f.endswith('.pdf')][:total_queries]
 
     for pdf_path in pdf_files:
         try:
@@ -255,12 +255,12 @@ def update_repo():
 #     rejected_files_dir = os.path.join(base_dir, "rejected_files")
 #     #specified_subdir = "data.europa.eu"
 #     #specified_subdir = "diariodarepublica.pt" 
-#     crawling_test_dir = os.path.join(base_dir, "crawling_test", subdir)
+#     crawlled_files_dir = os.path.join(base_dir, "crawlled_files", subdir)
 #     os.makedirs(accepted_files_dir, exist_ok=True)
 #     os.makedirs(rejected_files_dir, exist_ok=True)
 
 #     # Get the list of first 50 PDFs in the specified subdir
-#     pdf_files = [os.path.join(crawling_test_dir, f) for f in os.listdir(crawling_test_dir) if f.endswith('.pdf')][:10]
+#     pdf_files = [os.path.join(crawlled_files_dir, f) for f in os.listdir(crawlled_files_dir) if f.endswith('.pdf')][:10]
 
 #     for pdf_path in pdf_files:
 #         # Analyze the document using the function from gpt_repo
@@ -596,10 +596,10 @@ def get_area_counts_by_year():
 @app.route('/list-subdirs', methods=['GET'])
 def list_subdirs():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    crawling_test_dir = os.path.join(base_dir, "crawling_test")
+    crawlled_files_dir = os.path.join(base_dir, "crawlled_files")
     
     # List only directories
-    subdirs = [d for d in os.listdir(crawling_test_dir) if os.path.isdir(os.path.join(crawling_test_dir, d))]
+    subdirs = [d for d in os.listdir(crawlled_files_dir) if os.path.isdir(os.path.join(crawlled_files_dir, d))]
     
     return jsonify(subdirs)
 

@@ -2,7 +2,9 @@ backend/crawling_test/*
 backend/.env
 frontend/.env
 backend/accepted_files/*
+!backend/accepted_files/.gitignore
 backend/rejected_files/*
 backend/manual_deleted/*
 backend/duplicated_files/*
 geckodriver.exe
+backend/crawlled_files/*
