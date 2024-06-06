@@ -9,3 +9,4 @@ backend/duplicated_files/*
 geckodriver.exe
 backend/crawlled_files/*
 backend/venv/*
+geckodriver.exe
