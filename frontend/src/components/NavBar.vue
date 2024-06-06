@@ -1,7 +1,7 @@
 <template>
     <v-app-bar app>
         <v-toolbar-title style="color: #ffffff; font-weight: bold;">
-            Cyberlaw
+            Automated Repository
         </v-toolbar-title>
         <v-spacer></v-spacer>
 

@@ -3,9 +3,9 @@
     <!-- Welcome Section -->
     <v-row justify="center" class="my-12">
       <v-col cols="12" sm="8" md="6" class="text-center">
-        <h1 class="display-2 mb-4">Welcome to <span class="highlight">Cyberlaw</span></h1>
+        <h1 class="display-2 mb-4">Welcome to <span class="highlight">Automated Repository</span></h1>
         <p class="subtitle-1 mb-6">
-          Your gateway to the world of cybersecurity and digital rights legal documentation.
+          Your gateway to the world of cyberspace legal and technical documentation.
         </p>
         <v-btn large color="secondary" :to="{ name: 'Repository' }">Explore Repository</v-btn>
       </v-col>
@@ -35,7 +35,7 @@
       <v-row justify="center">
         <v-col cols="12" class="text-center py-3">
           <p class="caption mb-0">
-            &copy; 2024 Cyberlaw is a project made for 
+            &copy; 2024 Automated Repository is part of a thesis made for 
             <a href="https://www.ipleiria.pt" target="_blank" class="footer-link">IPLeiria</a>
           </p>
         </v-col>
