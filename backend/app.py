@@ -134,13 +134,6 @@ def upload_file():
     return {'message': 'No file was uploaded'}, 400
 
 
-
-    
-
-     #socketio.start_background_task(crawl, app, socketio, url='https://www.ipleiria.pt/', output_dir='C:/Users/josem/Desktop/Webcrawler/backend/pdfcrawler/crawler/crawlled_files', method='rendered')
-   
-    # return {'message': 'Crawler started'}, 200
-
 @app.route('/soc', methods=['GET'])
 def test_socket():
     socketio.emit('test_event', {'message': 'Test message from server'})
