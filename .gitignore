@@ -16,4 +16,6 @@ backend/venv
 backend\venv
 geckodriver.exe
 backend/__pycache__
+backend/__pycache__/*
 backend/pdfcrawler/__pycache__
+backend/pdfcrawler/__pycache__/*
