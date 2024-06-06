@@ -14,7 +14,7 @@ from pdfcrawler.crawler.downloaders import RequestsDownloader
 from pdfcrawler.crawler.handlers import ProcessHandler
 from dotenv import load_dotenv
 from queue import Queue
-import gpt_repo  # Importing the gpt_repo module
+import gpt_repo  
 from pymongo import MongoClient
 from pdfcrawler.crawler.helper import parse_result_to_dict, compute_md5, format_date
 from bson.objectid import ObjectId
@@ -22,12 +22,13 @@ from RSSConsumer import parse_rss_feed_EurLex, parse_rss_feed_DRE, extract_eurle
 import gridfs
 import shutil
 from io import BytesIO
-#import json
+
 load_dotenv()  # Load environment variables from .env file
 app = Flask(__name__)
 
+mongo_db_url = os.getenv('MONGO_DB_URL')
 #MongoDB setup
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient(mongo_db_url)
 db = client['CyberlawRepo']
 documents_collection = db['Documents']
 fs = gridfs.GridFS(db)
