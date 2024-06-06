@@ -4,8 +4,11 @@ frontend/.env
 backend/accepted_files/*
 !backend/accepted_files/.gitignore
 backend/rejected_files/*
+!backend/rejected_files/.gitignore
 backend/manual_deleted/*
+!backend/manual_deleted/.gitignore
 backend/duplicated_files/*
+!backend/duplicated_files/.gitignore
 geckodriver.exe
 backend/crawlled_files/*
 backend/venv/*
