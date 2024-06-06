@@ -8,3 +8,4 @@ backend/manual_deleted/*
 backend/duplicated_files/*
 geckodriver.exe
 backend/crawlled_files/*
+backend/venv/*
