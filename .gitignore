@@ -19,3 +19,4 @@ backend/__pycache__
 backend/__pycache__/*
 backend/pdfcrawler/__pycache__
 backend/pdfcrawler/__pycache__/*
+backend/pdfcrawler/crawler/__pycache__/*
