@@ -13,4 +13,5 @@ geckodriver.exe
 backend/crawlled_files/*
 backend/venv/*
 backend/venv
+backend\venv
 geckodriver.exe
