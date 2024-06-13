@@ -1,7 +1,7 @@
 @echo off
 REM Activate the virtual environment
 
-call backend\venv\Scripts\activate
+call venv\Scripts\activate
 
 REM Start the backend server
 echo Starting backend server...
