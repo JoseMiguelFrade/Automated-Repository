@@ -2,13 +2,13 @@
 
 REM Function to prompt user for input with a default value
 setlocal enabledelayedexpansion
-set promptInputDefault=%1
-set promptInputMessage=%2
 
 :promptInput
-set /p "userInput=%promptInputMessage% [%promptInputDefault%]: "
+set "default=%~1"
+set "message=%~2"
+set /p "userInput=%message% [%default%]: "
 if "%userInput%"=="" (
-    set userInput=%promptInputDefault%
+    set "userInput=%default%"
 )
 endlocal & set "%~3=%userInput%"
 goto :EOF
@@ -55,7 +55,7 @@ echo Creating backend .env file...
 set /p "api_key=Enter your OpenAI API Key (or leave blank to fill later): "
 set /p "mongo_url=Enter your MongoDB URL (or leave blank to use default): "
 if "%mongo_url%"=="" (
-    set mongo_url=mongodb://localhost:27017/
+    set "mongo_url=mongodb://localhost:27017/"
 )
 echo OPENAI_API_KEY=%api_key% > backend\.env
 echo MONGO_DB_URL=%mongo_url% >> backend\.env
@@ -67,9 +67,9 @@ npm install
 
 REM Create frontend .env file
 echo Creating frontend .env file...
-call :promptInput http "Enter backend protocol (http/s)" "backend_protocol"
-call :promptInput 127.0.0.1 "Enter backend address" "backend_address"
-call :promptInput 5000 "Enter backend port" "backend_port"
+call :promptInput "http" "Enter backend protocol (http/s)" "backend_protocol"
+call :promptInput "127.0.0.1" "Enter backend address" "backend_address"
+call :promptInput "5000" "Enter backend port" "backend_port"
 echo VITE_API_URL=%backend_protocol%://%backend_address%:%backend_port% > .env
 
 REM Building frontend
