@@ -1,5 +1,4 @@
 # Check if Python is installed
-Write-Host "Checking for Python..."
 try {
     python --version
 } catch {
@@ -8,7 +7,6 @@ try {
 }
 
 # Check if pip is installed
-Write-Host "Checking for pip..."
 try {
     pip --version
 } catch {
@@ -17,7 +15,6 @@ try {
 }
 
 # Check if Node.js is installed
-Write-Host "Checking for Node.js..."
 try {
     node --version
 } catch {
@@ -26,7 +23,6 @@ try {
 }
 
 # Check if npm is installed
-Write-Host "Checking for npm..."
 try {
     npm --version
 } catch {
@@ -35,16 +31,12 @@ try {
 }
 
 # Setting up Python virtual environment
-Write-Host "Setting up Python environment..."
+Write-Host "Setting up Python virtual environment..."
 python -m venv venv
 
 # Activate virtual environment
 Write-Host "Activating virtual environment..."
 & .\venv\Scripts\Activate.ps1
-
-# Upgrading pip
-Write-Host "Upgrading pip..."
-pip install --upgrade pip
 
 # Installing backend dependencies
 Write-Host "Installing backend dependencies..."
