@@ -31,12 +31,16 @@ try {
 }
 
 # Setting up Python virtual environment
-Write-Host "Setting up Python virtual environment..."
+Write-Host "Setting up Python environment..."
 python -m venv venv
 
 # Activate virtual environment
 Write-Host "Activating virtual environment..."
 & .\venv\Scripts\Activate.ps1
+
+# Upgrading pip
+Write-Host "Upgrading pip..."
+pip install --upgrade pip
 
 # Installing backend dependencies
 Write-Host "Installing backend dependencies..."
