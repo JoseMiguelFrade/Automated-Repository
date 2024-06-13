@@ -44,7 +44,7 @@ To get started with the Automated Repository, follow these steps:
 
 This project is part of a thesis conducted at the Instituto Politécnico de Leiria.
 
-![Institute Logo](https://www.google.com/url?sa=i&url=https%3A%2F%2Fpt.wikipedia.org%2Fwiki%2FInstituto_Polit%25C3%25A9cnico_de_Leiria&psig=AOvVaw0oX-k5h6BU6Fms0ZHY1cDs&ust=1718363011515000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCNj8mJm32IYDFQAAAAAdAAAAABAE)
+![Institute Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png/200px-Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png)
 
 
 
