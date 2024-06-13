@@ -67,24 +67,6 @@ def analyze_document(pdf_path, total_queries, gpt_3_5_count):
     return response.choices[0].message.content
 
 
-# def analyze_document(pdf_path):
-#     pdf_text = extract_text_from_pdf_with_pdfminer(pdf_path)
-
-#     client = openai.OpenAI()
-#     response = client.chat.completions.create(
-#         model="gpt-3.5-turbo-1106",
-#         response_format={"type": "json_object"},
-#         messages=[
-#             {"role": "system", "content": "You are a helpful assistant designed to output structured data in JSON format."},
-#             {"role": "user", "content": f"Analyze the following document extract: '{pdf_text}'. Provide structured information in JSON format indicating: is it related to IT/cybersecurity/data privacy/AI (is_related), its subject (subject), the issuer (issuer), the country/institution origin (origin), its type (type), the date of emission (date), the area of application (area_of_application), the title (name), two related laws/declarations/norms/regulations (related_docs), and a brief summary [80 tokens max] (abstract) of the document."}
-#         ],
-#         temperature=0.4,
-#         max_tokens=250,
-#         top_p=1
-#     )
-
-#     return response.choices[0].message.content
-
 def regenerate_document_field(pdf, field, temperature):
     pdf_text = extract_text_from_pdf_with_pdfminer(pdf=pdf)
     print(f"field: {field}, temperature: {temperature}")
@@ -116,7 +98,7 @@ def regenerate_document_field(pdf, field, temperature):
             {"role": "user", "content": user_content}
         ],
         temperature=temperature,
-        max_tokens=220,
+        max_tokens=380,
         top_p=1
     )
     return response.choices[0].message.content
