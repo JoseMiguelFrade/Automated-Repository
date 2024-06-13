@@ -36,7 +36,7 @@ Write-Host "Activating virtual environment..."
 
 # Install Python dependencies
 Write-Host "Installing backend dependencies using pip..."
-pip install --no-cache-dir -U -r .\PyPackages\requirements.txt --index-url https://pypi.org/simple
+pip install --no-cache-dir -U -r .\PyPackages\requirements.txt
 
 # Prompt user for backend configuration
 $backendProtocol = Read-Host "Enter backend protocol (http/s)" -DefaultValue "http"
