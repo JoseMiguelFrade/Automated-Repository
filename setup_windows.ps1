@@ -36,6 +36,7 @@ Write-Host "Activating virtual environment..."
 
 # Install Python dependencies using setup.py
 Write-Host "Installing backend dependencies using setup.py..."
+pip install setuptools
 python setup.py install
 
 # Prompt user for backend configuration
