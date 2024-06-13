@@ -1,4 +1,5 @@
 # Check if Python is installed
+Write-Host "Checking for Python..."
 try {
     python --version
 } catch {
@@ -7,6 +8,7 @@ try {
 }
 
 # Check if pip is installed
+Write-Host "Checking for pip..."
 try {
     pip --version
 } catch {
@@ -15,6 +17,7 @@ try {
 }
 
 # Check if Node.js is installed
+Write-Host "Checking for Node.js..."
 try {
     node --version
 } catch {
@@ -23,6 +26,7 @@ try {
 }
 
 # Check if npm is installed
+Write-Host "Checking for npm..."
 try {
     npm --version
 } catch {
