@@ -1,0 +1,14 @@
+beautifulsoup4
+click
+requests
+selenium
+requests_html
+psutil
+flask
+flask-cors
+flask-socketio
+pymongo
+gridfs
+pdfminer.six
+eventlet
+openai

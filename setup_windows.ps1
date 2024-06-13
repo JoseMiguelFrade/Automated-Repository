@@ -49,7 +49,7 @@ Write-Output "Activating virtual environment..."
 
 # Installing backend dependencies
 Write-Output "Installing backend dependencies..."
-pip install -r requirements.txt
+pip install -r ./PyPackages/requirements.txt
 
 # Create backend .env file
 Write-Output "Creating backend .env file..."
