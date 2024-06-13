@@ -34,10 +34,9 @@ python -m venv venv
 Write-Host "Activating virtual environment..."
 & .\venv\Scripts\Activate.ps1
 
-# Install Python dependencies using setup.py
-Write-Host "Installing backend dependencies using setup.py..."
-pip install setuptools
-python setup.py install
+# Install Python dependencies
+Write-Host "Installing backend dependencies using pip..."
+pip install --no-cache-dir -U -r .\PyPackages\requirments.txt
 
 # Prompt user for backend configuration
 $backendProtocol = Read-Host "Enter backend protocol (http/s)" -DefaultValue "http"
