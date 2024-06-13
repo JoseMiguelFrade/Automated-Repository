@@ -1,80 +1,88 @@
-# Function to prompt user for input with a default value
-function Prompt-Input {
-    param (
-        [string]$DefaultValue,
-        [string]$Message,
-        [string]$GlobalVarName
-    )
-
-    $userInput = Read-Host "$Message [$DefaultValue]"
-    if ([string]::IsNullOrEmpty($userInput)) {
-        $userInput = $DefaultValue
-    }
-    Set-Variable -Name $GlobalVarName -Value $userInput -Scope Global
-}
-
-# Check for Python and pip
-Write-Output "Checking for Python..."
-if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
-    Write-Output "Python is not installed. Please install Python."
+# Check if Python is installed
+try {
+    python --version
+} catch {
+    Write-Host "Python is not installed. Please install Python."
     exit 1
 }
 
-Write-Output "Checking for pip..."
-if (-not (Get-Command pip -ErrorAction SilentlyContinue)) {
-    Write-Output "pip is not installed. Please install pip."
+# Check if pip is installed
+try {
+    pip --version
+} catch {
+    Write-Host "pip is not installed. Please install pip."
     exit 1
 }
 
-# Check for Node.js and npm
-Write-Output "Checking for Node.js..."
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-    Write-Output "Node.js is not installed. Please install Node.js."
+# Check if Node.js is installed
+try {
+    node --version
+} catch {
+    Write-Host "Node.js is not installed. Please install Node.js."
     exit 1
 }
 
-Write-Output "Checking for npm..."
-if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    Write-Output "npm is not installed. Please install npm."
+# Check if npm is installed
+try {
+    npm --version
+} catch {
+    Write-Host "npm is not installed. Please install npm."
     exit 1
 }
 
-# Setting up Python environment
-Write-Output "Setting up Python environment..."
+# Setting up Python virtual environment
+Write-Host "Setting up Python virtual environment..."
 python -m venv venv
 
-# Activate virtual environment (Windows)
-Write-Output "Activating virtual environment..."
+# Activate virtual environment
+Write-Host "Activating virtual environment..."
 & .\venv\Scripts\Activate.ps1
 
 # Installing backend dependencies
-Write-Output "Installing backend dependencies..."
-pip install -r .\PyPackages\requirments.txt
+Write-Host "Installing backend dependencies..."
+pip install -r .\PyPackages\requirements.txt
+
+# Prompt for backend environment variables
+$apiKey = Read-Host "Enter your OpenAI API Key (or leave blank to fill later)"
+$mongoUrl = Read-Host "Enter your MongoDB URL (or leave blank to use default)"
+if ($mongoUrl -eq "") {
+    $mongoUrl = "mongodb://localhost:27017/"
+}
 
 # Create backend .env file
-Write-Output "Creating backend .env file..."
-$api_key = Read-Host "Enter your OpenAI API Key (or leave blank to fill later)"
-$mongo_url = Read-Host "Enter your MongoDB URL (or leave blank to use default)"
-if ([string]::IsNullOrEmpty($mongo_url)) {
-    $mongo_url = "mongodb://localhost:27017/"
-}
-Set-Content -Path "backend\.env" -Value "OPENAI_API_KEY=$api_key`nMONGO_DB_URL=$mongo_url"
+Write-Host "Creating backend .env file..."
+@"
+OPENAI_API_KEY=$apiKey
+MONGO_DB_URL=$mongoUrl
+"@ | Out-File -FilePath backend\.env -Encoding utf8
 
 # Installing frontend dependencies
-Write-Output "Installing frontend dependencies..."
+Write-Host "Installing frontend dependencies..."
 cd frontend
 npm install
 
+# Prompt for frontend environment variables
+$backendProtocol = Read-Host "Enter backend protocol (http/s)"
+$backendAddress = Read-Host "Enter backend address"
+$backendPort = Read-Host "Enter backend port"
+if ($backendProtocol -eq "") {
+    $backendProtocol = "http"
+}
+if ($backendAddress -eq "") {
+    $backendAddress = "127.0.0.1"
+}
+if ($backendPort -eq "") {
+    $backendPort = "5000"
+}
+
 # Create frontend .env file
-Write-Output "Creating frontend .env file..."
-Prompt-Input -DefaultValue "http" -Message "Enter backend protocol (http/s)" -GlobalVarName "backend_protocol"
-Prompt-Input -DefaultValue "127.0.0.1" -Message "Enter backend address" -GlobalVarName "backend_address"
-Prompt-Input -DefaultValue "5000" -Message "Enter backend port" -GlobalVarName "backend_port"
-Set-Content -Path ".env" -Value "VITE_API_URL=$backend_protocol`://$backend_address`:$backend_port"
+Write-Host "Creating frontend .env file..."
+@"
+VITE_API_URL=$backendProtocol://$backendAddress:$backendPort
+"@ | Out-File -FilePath .env -Encoding utf8
 
 # Building frontend
-Write-Output "Building frontend..."
+Write-Host "Building frontend..."
 npm run build
 
-Write-Output "Setup completed successfully!"
-pause
+Write-Host "Setup completed successfully!"
