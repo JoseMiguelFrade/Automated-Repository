@@ -24,7 +24,7 @@ The Automated Repository is a project developed to enable automatic document col
 
 ## Project Overview
 
-![Project Architeture](./Images/EsquemaRepoCyberlaw2)
+![Project Architeture](./Images/EsquemaRepoCyberlaw2.png)
 
 ## Setup Guide
 
