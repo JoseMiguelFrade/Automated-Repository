@@ -36,7 +36,10 @@ Write-Host "Activating virtual environment..."
 
 # Installing backend dependencies
 Write-Host "Installing backend dependencies..."
-pip install  --no-cache-dir -r .\PyPackages\requirments.txt
+foreach ($package in $packages) {
+    Write-Host "Installing $package..."
+    pip install --no-cache-dir $package
+}
 
 # Prompt user for backend configuration
 $backendProtocol = Read-Host "Enter backend protocol (http/s)" -DefaultValue "http"
