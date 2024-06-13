@@ -1,8 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name='project-setup',
+    name='my_project',
     version='0.1',
+    packages=find_packages(where='backend'),
     install_requires=[
         'beautifulsoup4',
         'click',
@@ -14,6 +15,13 @@ setup(
         'flask-cors',
         'flask-socketio',
         'pymongo',
-        'openai'
     ],
+    extras_require={
+        'tests': [
+            'pytest',
+            'pytest-cov',
+            'pytest-flakes',
+            'pytest-pep8',
+        ],
+    },
 )
