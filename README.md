@@ -34,11 +34,42 @@ Document information and repository management are facilitated by an intuitive U
 
 ## Getting Started
 
+## Getting Started
+
 To get started with the Automated Repository, follow these steps:
 
-1. Clone the repository.
+### Pre-requisites
+
+**Recommended:**
+- **Windows 11:** 8 GB RAM Minimum.
+- **Ubuntu 22.04 Desktop:** 8 GB RAM Minimum.
+
+**Required:**
+- **Python 3.x** (3.10+ Recommended) and pip: [Download Python](https://www.python.org/downloads/)
+- **MongoDB**: [Download MongoDB](https://www.mongodb.com/) (MongoDB Compass Recommended)
+- **Node.js** (20.10 Recommended): [Download Node.js](https://nodejs.org/en/download/package-manager)
+
+**Not required for installation but needed to fully operate the Automated Repository:**
+- **Geckodriver** (the .exe needs to be installed in the root folder of the project): [Download Geckodriver](https://github.com/mozilla/geckodriver/releases)
+- **Firefox browser**: [Download Firefox](https://www.mozilla.org/pt-PT/firefox/new/)
+- **OpenAI API Key**: [Get OpenAI API Key](https://openai.com/api/)
+
+**After fulfilling the pre-requisites, run the following commands depending on the OS:**
+
+**Clone the repository.**
    ```sh
    git clone https://github.com/yourusername/automated-repository.git
+```
+**Run the following, depending on the OS:**    
+   **Windows:**
+   - Run the setup script to check pre-requisites, build environment files, and install pip and Node.js dependencies.
+     ```sh
+     setup_windows.exe
+     ```
+   - Start the Automated Repository application.
+     ```sh
+     AutomatedRepository_win.exe
+     ```
 
 ## Thesis Information
 
