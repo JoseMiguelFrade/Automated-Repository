@@ -81,3 +81,5 @@ Write-Host "Building frontend..."
 npm run build
 
 Write-Host "Setup completed successfully!"
+Write-Host "Success... press any key to exit window"
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
