@@ -41,8 +41,8 @@ To get started with the Automated Repository, follow these steps:
 ### Pre-requisites
 
 **Recommended:**
-- **Windows 11:** 8 GB RAM Minimum.
-- **Ubuntu 22.04 Desktop:** 8 GB RAM Minimum.
+- **Windows 11:** 8 GB RAM Recommended.
+- **Ubuntu 22.04 Desktop:** 8 GB RAM Recommended.
 
 **Required:**
 - **Python 3.x** (3.10+ Recommended) and pip: [Download Python](https://www.python.org/downloads/)
