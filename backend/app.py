@@ -45,7 +45,7 @@ def worker(queue, app, stop_event, socketio, output_dir, depth, thread_id, crawl
     while not stop_event.is_set() and not queue.empty():
         url = queue.get()
         try:
-            crawl(app, stop_event, socketio, url, output_dir, depth, crawl_in_depth=crawl_in_depth)
+            crawl(app, stop_event, socketio, url, output_dir, depth, crawl_in_depth=crawl_in_depth, gecko_path="../geckodriver.exe")
         finally:
             queue.task_done()
 

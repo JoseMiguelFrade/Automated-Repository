@@ -20,7 +20,7 @@ logging.basicConfig(
 requests_downloader = RequestsDownloader()
 
 
-def crawl(app, stop_event, socketio, url, output_dir, depth=2, method="rendered-all", gecko_path="C:/Users/josem/Desktop/CyberlawRepo/geckodriver.exe", page_name=None, custom_stats_handler=None, custom_process_handler=None, crawl_in_depth=False):
+def crawl(app, stop_event, socketio, url, output_dir, depth=2, method="rendered-all", gecko_path="geckodriver.exe", page_name=None, custom_stats_handler=None, custom_process_handler=None, crawl_in_depth=False):
     head_handlers = {}
     get_handlers = {}
     # get name of page for sub-directories etc. if not custom name given
