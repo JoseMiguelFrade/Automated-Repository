@@ -22,3 +22,4 @@ backend/pdfcrawler/__pycache__/*
 backend/pdfcrawler/crawler/__pycache__/*
 setup_windows.ahk
 StartRepository_Windows.ahk
+AutomatedRepository_win.ahk
