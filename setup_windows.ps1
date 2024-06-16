@@ -38,7 +38,7 @@ Write-Host "Activating virtual environment..."
 Write-Host "Installing backend dependencies using pip..."
 pip install --no-cache-dir -U -r .\PyPackages\requirements.txt
 
-# Prompt user for backend configuration with default values
+# Function to prompt user for input with a default value
 function Prompt-With-Default {
     param (
         [string]$Message,
@@ -51,20 +51,35 @@ function Prompt-With-Default {
     return $input
 }
 
+# Function to prompt user for input with an optional value
+function Prompt-With-Optional {
+    param (
+        [string]$Message
+    )
+    $input = Read-Host "$Message (or leave blank to fill later)"
+    return $input
+}
+
 # Prompt user for backend configuration
 $backendProtocol = Prompt-With-Default "Enter backend protocol (http/s)" "http"
 $backendAddress = Prompt-With-Default "Enter backend address" "127.0.0.1"
 $backendPort = Prompt-With-Default "Enter backend port" "5000"
 
 # Prompt user for OpenAI API key
-$apiKey = Read-Host "Enter your OpenAI API Key (or leave blank to fill later)"
+$apiKey = Prompt-With-Optional "Enter your OpenAI API Key"
 
 # Prompt user for MongoDB URL
 $mongoUrl = Prompt-With-Default "Enter your MongoDB URL" "mongodb://localhost:27017/"
 
+# Prompt user for MongoDB Database Name
+$mongoDbName = Prompt-With-Optional "Enter your MongoDB Database Name"
+
+# Prompt user for MongoDB Collection Name
+$mongoCollectionName = Prompt-With-Optional "Enter your MongoDB Collection Name"
+
 # Create backend .env file
 Write-Host "Creating backend .env file..."
-Set-Content -Path ".\backend\.env" -Value "OPENAI_API_KEY=$apiKey`nMONGO_DB_URL=$mongoUrl"
+Set-Content -Path ".\backend\.env" -Value "OPENAI_API_KEY=$apiKey`nMONGO_DB_URL=$mongoUrl`nMongoDB=$mongoDbName`nMongoCollection=$mongoCollectionName"
 
 # Installing frontend dependencies
 Write-Host "Installing frontend dependencies..."

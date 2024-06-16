@@ -29,8 +29,8 @@ app = Flask(__name__)
 mongo_db_url = os.getenv('MONGO_DB_URL')
 #MongoDB setup
 client = MongoClient(mongo_db_url)
-db = client['CyberlawRepo']
-documents_collection = db['Documents']
+db = client[os.getenv('MongoDB')]
+documents_collection = db[os.getenv('MongoCollection')]
 fs = gridfs.GridFS(db)
 
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -234,55 +234,6 @@ def update_repo():
 
     return jsonify({'result': 'Update completed'}), 200
 
-
-# @app.route('/update-repo', methods=['POST'])
-# def update_repo():
-#     stop_crawler()
-#     subdir = request.json.get('subdir')
-#     total_queries = int(request.json.get('total_queries', 10))  # Default to 10 if not provided
-#     gpt_3_5_count = int(request.json.get('gpt_3_5_count', 4))  # Default to 4 if not provided
-#     if not subdir:
-#         return jsonify({'error': 'Missing subdir parameter'}), 400
-#     # Define directories
-#     base_dir = os.path.dirname(os.path.abspath(__file__))
-#     accepted_files_dir = os.path.join(base_dir, "accepted_files")
-#     rejected_files_dir = os.path.join(base_dir, "rejected_files")
-#     #specified_subdir = "data.europa.eu"
-#     #specified_subdir = "diariodarepublica.pt" 
-#     crawlled_files_dir = os.path.join(base_dir, "crawlled_files", subdir)
-#     os.makedirs(accepted_files_dir, exist_ok=True)
-#     os.makedirs(rejected_files_dir, exist_ok=True)
-
-#     # Get the list of first 50 PDFs in the specified subdir
-#     pdf_files = [os.path.join(crawlled_files_dir, f) for f in os.listdir(crawlled_files_dir) if f.endswith('.pdf')][:10]
-
-#     for pdf_path in pdf_files:
-#         # Analyze the document using the function from gpt_repo
-#         result = gpt_repo.analyze_document(pdf_path,total_queries, gpt_3_5_count)
-#         result_dict = parse_result_to_dict(result)
-
-#         # Check if the document is related
-#         #print(result_dict)
-#         if result_dict.get("is_related", "").lower() == "yes":
-#                        # Store the PDF in GridFS and MongoDB
-#             #print("related")
-#             with open(pdf_path, 'rb') as pdf_file:
-                
-
-#                 pdf_file_id = fs.put(pdf_file, filename=os.path.basename(pdf_path))
-#                 result_dict['pdf_file_id'] = str(pdf_file_id)
-#                 document_id = documents_collection.insert_one(result_dict).inserted_id
-
-#                 # Move to accepted_files directory
-#             accepted_file_path = os.path.join(accepted_files_dir, os.path.basename(pdf_path))
-#             shutil.move(pdf_path, accepted_file_path)
-            
-#         else:
-#              # Move to rejected_files directory
-#             rejected_file_path = os.path.join(rejected_files_dir, os.path.basename(pdf_path))
-#             shutil.move(pdf_path, rejected_file_path)
-
-#     return jsonify({'result': 'Update completed'}), 200
 
 @app.route('/get-documents', methods=['GET'])
 def get_documents():
