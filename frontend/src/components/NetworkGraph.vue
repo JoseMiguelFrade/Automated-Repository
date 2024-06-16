@@ -98,6 +98,7 @@ export default {
             nodeFormats: {
                 'Portugal': 'square',
                 'European Union': 'dot',
+                'European Parliament and Council of the European Union': 'dot',
                 'European Commission': 'dot',
                 'EU': 'dot',
                 'Other': 'triangle'

@@ -126,8 +126,8 @@ export default {
     return {
       documents: [], // All fetched documents
       typeOptions: ['Law', 'Directive', 'Regulation', 'Other'],
-      issuerOptions: ['EU', 'Diário da República', 'Other'],
-      originOptions: ['EU', 'Portugal', 'Other'],
+      issuerOptions: ['ENISA', 'Centro Nacional de Cibersegurança', 'Diário da República', 'Other'],
+      originOptions: ['EU', 'European Commission','Portugal', 'Other'],
       subjectOptions: ['Cybersecurity', 'Data Privacy', 'Governance', 'Other'],
       areaOptions: ['General', 'Defense', 'Healthcare', 'Finance', 'Energy', 'Cybersecurity','AI','Transport','Digital Rights','Justice','Other'],
       documents: [],
@@ -261,34 +261,47 @@ export default {
     applyFiltersToDocument(doc) {
     // Helper function to determine if a document matches the "Other" criteria for a given category
     const matchesOther = (categoryOptions, docValues, selectedFilters) => {
-        const lowerCaseOptions = categoryOptions.map(option => option.toLowerCase());
+      //console.log("aqui")
+       // console.log(selectedFilters)
+        const lowerCaseOptions = categoryOptions.map(option => option);
         // Ensure docValues is an array to simplify the logic (split if it's a string with '/')
         const docValuesArray = typeof docValues === 'string' ? docValues.split('/') : [docValues];
         const isOtherSelected = selectedFilters.includes('Other');
-        const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue.toLowerCase()));
+        //console.log(isOtherSelected)
+        const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue));
         // If "Other" is selected but the document matches a predefined option, return false
         return isOtherSelected && !matchesPredefinedOption;
     };
-
     // Split document categories for area and issuer if they're in 'Category1/Category2' format
     const docAreas = typeof doc.area === 'string' ? doc.area.split('/') : [doc.area];
-    const docIssuers = typeof doc.issuer === 'string' ? doc.issuer.split('/') : [doc.issuer];
-
+    //const docIssuers = typeof doc.issuer === 'string' ? doc.issuer.split('/') : [doc.issuer];
+    const docSubjects = typeof doc.subject === 'string' ? doc.subject.split('/') : [doc.subject];
     // Function to check match for single/multi categories against filters
     const matchesCategory = (docCategories, filterCategories, categoryOptions) => {
         return !filterCategories.length || filterCategories.some(filterCategory => 
             docCategories.some(docCategory => 
-                filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory.toLowerCase() === filterCategory.toLowerCase()));
+                filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory === filterCategory));
     };
-
+    
+    const matchesSingleCategory = (docCategory, filterCategory, categoryOptions) => {
+    return !filterCategory.length || filterCategory.some(filter => 
+        filter === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategory) : docCategory === filter
+    );
+};
     // Checks if the document matches selected filters or the "Other" criteria for each category
-    const matchesType = !this.filters.type.length || this.filters.type.includes(doc.type.toLowerCase());
-    const matchesIssuer = matchesCategory(docIssuers, this.filters.issuer, this.issuerOptions);
-    const matchesOrigin = !this.filters.origin.length || this.filters.origin.includes(doc.origin.toLowerCase());
-    const matchesSubject = !this.filters.subject.length || this.filters.subject.includes(doc.subject.toLowerCase());
+    //const matchesType = !this.filters.type.length || this.filters.type.includes(doc.type);
+    const matchesType = matchesSingleCategory(doc.type, this.filters.type, this.typeOptions);
+    //const matchesIssuer = matchesCategory(docIssuers, this.filters.issuer, this.issuerOptions);
+    const matchesIssuer = matchesSingleCategory(doc.issuer, this.filters.issuer, this.issuerOptions);
+    //const matchesOrigin = !this.filters.origin.length || this.filters.origin.includes(doc.origin);
+    const matchesOrigin = matchesSingleCategory(doc.origin, this.filters.origin, this.originOptions);
+    //const matchesOrigin = matchesCategory(doc.origin, this.filters.origin, this.originOptions);
+    //const matchesSubject = !this.filters.subject.length || this.filters.subject.includes(doc.subject);
+    const matchesSubject = matchesCategory(docSubjects, this.filters.subject, this.subjectOptions);
     const matchesArea = matchesCategory(docAreas, this.filters.area, this.areaOptions);
 
-    // Combine all match conditions. A document must satisfy all category conditions to be included.
+    //A document must satisfy all category conditions to be included.
+    //console.log(matchesOrigin)
     return matchesType && matchesIssuer && matchesOrigin && matchesSubject && matchesArea;
 },
     applyFilters() {
@@ -333,7 +346,7 @@ export default {
     },
     filters: {
       handler(value) {
-        console.log(value);
+        //console.log(value);
         this.setFilters(value);
       },
       deep: true,
