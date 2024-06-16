@@ -38,16 +38,29 @@ Write-Host "Activating virtual environment..."
 Write-Host "Installing backend dependencies using pip..."
 pip install --no-cache-dir -U -r .\PyPackages\requirements.txt
 
+# Prompt user for backend configuration with default values
+function Prompt-With-Default {
+    param (
+        [string]$Message,
+        [string]$Default
+    )
+    $input = Read-Host "$Message [$Default]"
+    if ([string]::IsNullOrWhiteSpace($input)) {
+        return $Default
+    }
+    return $input
+}
+
 # Prompt user for backend configuration
-$backendProtocol = Read-Host "Enter backend protocol (http/s)" -DefaultValue "http"
-$backendAddress = Read-Host "Enter backend address" -DefaultValue "127.0.0.1"
-$backendPort = Read-Host "Enter backend port" -DefaultValue "5000"
+$backendProtocol = Prompt-With-Default "Enter backend protocol (http/s)" "http"
+$backendAddress = Prompt-With-Default "Enter backend address" "127.0.0.1"
+$backendPort = Prompt-With-Default "Enter backend port" "5000"
 
 # Prompt user for OpenAI API key
 $apiKey = Read-Host "Enter your OpenAI API Key (or leave blank to fill later)"
 
 # Prompt user for MongoDB URL
-$mongoUrl = Read-Host "Enter your MongoDB URL (or leave blank to use default)" -DefaultValue "mongodb://localhost:27017/"
+$mongoUrl = Prompt-With-Default "Enter your MongoDB URL" "mongodb://localhost:27017/"
 
 # Create backend .env file
 Write-Host "Creating backend .env file..."
