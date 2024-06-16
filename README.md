@@ -34,8 +34,6 @@ Document information and repository management are facilitated by an intuitive U
 
 ## Getting Started
 
-## Getting Started
-
 To get started with the Automated Repository, follow these steps:
 
 ### Pre-requisites
