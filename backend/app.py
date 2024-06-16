@@ -437,21 +437,29 @@ def get_document_counts_by_year():
         elif origin.lower() != 'all':
             pipeline.append({"$match": {"origin": origin}})
 
-    # Continue with the rest of the pipeline
+    # Add a filter to ensure the date is in the correct format
     pipeline.extend([
         {
             "$project": {
+                "date": 1,
                 "year": {
                     "$dateToString": {
                         "format": "%Y",
                         "date": {
                             "$dateFromString": {
                                 "dateString": "$date",
-                                "format": "%d/%m/%Y"
+                                "format": "%d/%m/%Y",
+                                "onError": None,
+                                "onNull": None
                             }
                         }
                     }
                 }
+            }
+        },
+        {
+            "$match": {
+                "year": {"$ne": None}
             }
         },
         {
@@ -477,9 +485,16 @@ def get_area_counts_by_year():
                 "parsedDate": {
                     "$dateFromString": {
                         "dateString": "$date",
-                        "format": "%d/%m/%Y"
+                        "format": "%d/%m/%Y",
+                        "onError": None,
+                        "onNull": None
                     }
                 }
+            }
+        },
+        {
+            "$match": {
+                "parsedDate": {"$ne": None}
             }
         },
         {
