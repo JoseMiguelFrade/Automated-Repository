@@ -20,3 +20,4 @@ backend/__pycache__/*
 backend/pdfcrawler/__pycache__
 backend/pdfcrawler/__pycache__/*
 backend/pdfcrawler/crawler/__pycache__/*
+setup_windows.ahk
