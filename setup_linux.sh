@@ -1,71 +1,114 @@
 #!/bin/bash
 
-# Function to prompt user for input with a default value
-prompt_input() {
-    local prompt_message="$1"
-    local default_value="$2"
-    local input_variable_name="$3"
-    read -p "$prompt_message [$default_value]: " user_input
-    if [ -z "$user_input" ]; then
-        user_input="$default_value"
-    fi
-    eval "$input_variable_name='$user_input'"
+# Function to output a message
+output() {
+    echo "$1"
 }
 
-# Check for Python and pip
-if ! command -v python3 &> /dev/null; then
-    echo "Python is not installed. Please install Python."
-    exit 1
-fi
+# Function to run a command and capture its output in real-time
+run_command() {
+    command="$1"
+    working_dir="$2"
+    if [ -n "$working_dir" ]; then
+        pushd "$working_dir" > /dev/null
+    fi
+    output "Running: $command"
+    $command
+    if [ $? -ne 0 ]; then
+        output "Error running command: $command"
+    fi
+    if [ -n "$working_dir" ]; then
+        popd > /dev/null
+    fi
+}
 
-if ! command -v pip3 &> /dev/null; then
-    echo "pip is not installed. Please install pip."
-    exit 1
-fi
+# Function to check for command availability
+check_command() {
+    command="$1"
+    friendly_name="$2"
+    if ! command -v $command &> /dev/null; then
+        output "$friendly_name is not installed. Please install $friendly_name."
+        exit 1
+    fi
+}
 
-# Check for Node.js and npm
-if ! command -v node &> /dev/null; then
-    echo "Node.js is not installed. Please install Node.js."
-    exit 1
-fi
+# Check for Python
+output "Checking for Python..."
+check_command "python3" "Python"
 
-if ! command -v npm &> /dev/null; then
-    echo "npm is not installed. Please install npm."
-    exit 1
-fi
+# Check for pip
+output "Checking for pip..."
+check_command "pip3" "pip"
+
+# Check for Node.js
+output "Checking for Node.js..."
+check_command "node" "Node.js"
+
+# Check for npm
+output "Checking for npm..."
+check_command "npm" "npm"
 
 # Setting up Python environment
-echo "Setting up Python environment..."
-python3 -m venv venv
+output "Setting up Python environment..."
+run_command "python3 -m venv venv"
 
 # Activate virtual environment
+output "Activating virtual environment..."
 source venv/bin/activate
+output "Virtual environment activated."
 
-# Installing backend dependencies
-echo "Installing backend dependencies..."
-pip install -r requirements.txt
+# Install Python dependencies
+output "Installing backend dependencies using pip..."
+run_command "pip install --no-cache-dir -U -r PyPackages/requirements.txt"
+
+# Prompt user for backend configuration
+read -p "Enter backend protocol (http/s) [http]: " backendProtocol
+backendProtocol=${backendProtocol:-http}
+
+read -p "Enter backend address [127.0.0.1]: " backendAddress
+backendAddress=${backendAddress:-127.0.0.1}
+
+read -p "Enter backend port [5000]: " backendPort
+backendPort=${backendPort:-5000}
+
+# Prompt user for OpenAI API key
+read -p "Enter your OpenAI API Key: " apiKey
+
+# Prompt user for MongoDB URL
+read -p "Enter your MongoDB URL [mongodb://localhost:27017/]: " mongoUrl
+mongoUrl=${mongoUrl:-mongodb://localhost:27017/}
+
+# Prompt user for MongoDB Database Name
+read -p "Enter your MongoDB Database Name: " mongoDbName
+
+# Prompt user for MongoDB Collection Name
+read -p "Enter your MongoDB Collection Name: " mongoCollectionName
 
 # Create backend .env file
-echo "Creating backend .env file..."
-read -p "Enter your OpenAI API Key (or leave blank to fill later): " api_key
-prompt_input "Enter your MongoDB URL (or leave blank to use default)" "mongodb://localhost:27017/" mongo_url
-echo "OPENAI_API_KEY=$api_key" > backend/.env
-echo "MONGO_DB_URL=$mongo_url" >> backend/.env
+output "Creating backend .env file..."
+cat <<EOL > backend/.env
+OPENAI_API_KEY=$apiKey
+MONGO_DB_URL=$mongoUrl
+MongoDB=$mongoDbName
+MongoCollection=$mongoCollectionName
+EOL
+output "Backend .env file created."
 
 # Installing frontend dependencies
-echo "Installing frontend dependencies..."
-cd frontend
-npm install
+output "Installing frontend dependencies..."
+run_command "npm install" "frontend"
 
 # Create frontend .env file
-echo "Creating frontend .env file..."
-prompt_input "Enter backend protocol" "http" backend_protocol
-prompt_input "Enter backend address" "127.0.0.1" backend_address
-prompt_input "Enter backend port" "5000" backend_port
-echo "VITE_API_URL=$backend_protocol://$backend_address:$backend_port" > .env
+output "Creating frontend .env file..."
+viteApiUrl="${backendProtocol}://${backendAddress}:${backendPort}"
+cat <<EOL > frontend/.env
+VITE_API_URL=$viteApiUrl
+EOL
+output "Frontend .env file created."
 
 # Building frontend
-echo "Building frontend..."
-npm run build
+output "Building frontend..."
+run_command "npm run build" "frontend"
 
-echo "Setup completed successfully!"
+output "Setup completed successfully! Press any key to exit window."
+read -n 1 -s
