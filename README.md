@@ -22,6 +22,7 @@ Document information and repository management are facilitated by an intuitive U
 - **Frontend**: Vuetify 3
 - **Backend**: Flask
 - **Database**: MongoDB
+- **OpenAI's GPT Models**: GPT-4o and GPT-3.5 Turbo
 
 ## Project Overview
 
@@ -60,7 +61,7 @@ To get started with the Automated Repository, follow these steps:
 ```
 **Run the following, depending on the OS:**    
    **Windows:**
-   - Run the setup script to check pre-requisites, build environment files, and install pip and Node.js dependencies.
+   - Run the setup executable to check pre-requisites, build environment files, and install pip and Node.js dependencies.
      ```sh
      setup_windows.exe
      ```
@@ -68,7 +69,21 @@ To get started with the Automated Repository, follow these steps:
      ```sh
      AutomatedRepository_win.exe
      ```
+  **Ubuntu**
+  -  Run the setup script to check pre-requisites, build environment files, and install pip and Node.js dependencies.
+     ```sh
+     setup_linux.sh
+     ```
 
+   - Start the Automated Repository application.
+     ```sh
+     AutomatedRepository_Linux.sh
+     ````
+   
+  **Known Issues - Ubuntu**:
+  - It may be necessary to rename geckodriver to geckodriver.exe.
+  - If firefox browser was installed by default with Ubuntu, it may be necessary to remove it and re-install it via apt. There is a known issue with firefox installed via snap and Selenium. We recommend this guide: [Resolve Issue With Firefox - Selenium](https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04)
+    
 ## Thesis Information
 
 This project is part of a thesis conducted at the Instituto Politécnico de Leiria.
