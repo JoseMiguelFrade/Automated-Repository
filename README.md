@@ -31,7 +31,9 @@ Document information and repository management are facilitated by an intuitive U
 ## Frontend Screenshots
 
 ![Home Page](./Images/NewHomePage.png)
-![Insert Frontend Print 2 Here]
+![Home Page](./Images/RepositoryView.png)
+![Home Page](./Images/GraphView.png)
+![Home Page](./Images/StatisticsView.png)
 
 ## Getting Started
 
