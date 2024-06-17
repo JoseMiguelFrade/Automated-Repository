@@ -30,7 +30,7 @@ Document information and repository management are facilitated by an intuitive U
 
 ## Frontend Screenshots
 
-![Insert Frontend Print 1 Here]
+![Home Page](./Images/NewHomePage.png)
 ![Insert Frontend Print 2 Here]
 
 ## Getting Started
