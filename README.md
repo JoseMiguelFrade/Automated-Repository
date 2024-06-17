@@ -86,7 +86,7 @@ To get started with the Automated Repository, follow these steps:
     
 ## Thesis Information
 
-This project is part of a thesis conducted at the Instituto Politécnico de Leiria.
+This project is part of a master thesis conducted at the [Instituto Politécnico de Leiria](https://www.ipleiria.pt/).
 
 ![Institute Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png/200px-Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png)
 
