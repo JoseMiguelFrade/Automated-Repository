@@ -10,25 +10,31 @@
         <v-btn large color="secondary" :to="{ name: 'Repository' }">Explore Repository</v-btn>
       </v-col>
     </v-row>
-
     <!-- Features Section -->
-    <v-row justify="center" class="my-12">
-      <v-col cols="12" sm="4" class="text-center">
-        <v-icon large color="primary">mdi-database-search</v-icon>
-        <h2 class="title">Document Repository</h2>
-        <p>Access a comprehensive collection of legal documents on cybersecurity and digital rights.</p>
-      </v-col>
-      <v-col cols="12" sm="4" class="text-center">
-        <v-icon large color="primary">mdi-robot</v-icon>
-        <h2 class="title">AI Analysis</h2>
-        <p>Leverage advanced AI to analyze and gain insights from legal texts and documents.</p>
-      </v-col>
-      <v-col cols="12" sm="4" class="text-center">
-        <v-icon large color="primary">mdi-chart-bell-curve</v-icon>
-        <h2 class="title">Relation Graph</h2>
-        <p>Visualize the connections and relationships between different legal documents in the database.</p>
-      </v-col>
-    </v-row>
+    <v-container>
+      <v-row justify="center" class="my-12">
+        <v-col cols="12" sm="6" md="3" class="text-center">
+          <v-icon large color="primary">mdi-database-search</v-icon>
+          <h2 class="title">Document Repository</h2>
+          <p>Access a comprehensive collection of legal documents on cybersecurity and digital rights.</p>
+        </v-col>
+        <v-col cols="12" sm="6" md="3" class="text-center">
+          <v-icon large color="primary">mdi-robot</v-icon>
+          <h2 class="title">AI Analysis</h2>
+          <p>Leverage advanced AI to analyze and gain insights from legal texts and documents.</p>
+        </v-col>
+        <v-col cols="12" sm="6" md="3" class="text-center">
+          <v-icon large color="primary">mdi-chart-bell-curve</v-icon>
+          <h2 class="title">Relation Graph</h2>
+          <p>Visualize the connections and relationships between different legal documents in the database.</p>
+        </v-col>
+        <v-col cols="12" sm="6" md="3" class="text-center">
+          <v-icon large color="primary">mdi-magnify</v-icon>
+          <h2 class="title">New Documents Updates</h2>
+          <p>Stay informed about the latest documents with an updated feed from major document repositories.</p>
+        </v-col>
+      </v-row>
+    </v-container>
 <!-- Footer -->
     <v-footer class="mt-auto" padless>
     <v-container fluid>
