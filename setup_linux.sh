@@ -48,6 +48,10 @@ check_command "node" "Node.js"
 output "Checking for npm..."
 check_command "npm" "npm"
 
+# Ensure python3-venv is installed
+output "Ensuring python3-venv is installed..."
+sudo apt install -y python3-venv
+
 # Setting up Python environment
 output "Setting up Python environment..."
 run_command "python3 -m venv venv"
