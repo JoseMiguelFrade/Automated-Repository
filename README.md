@@ -82,7 +82,7 @@ To get started with the Automated Repository, follow these steps:
    
   **Known Issues - Ubuntu**:
   - It may be necessary to rename geckodriver to geckodriver.exe.
-  - If firefox browser was installed by default with Ubuntu, it may be necessary to remove it and re-install it via apt. There is a known issue with firefox installed via snap and Selenium. We recommend this guide: [Resolve Issue With Firefox - Selenium](https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04)
+  - If firefox browser was installed by default with Ubuntu, it may be necessary to remove it and re-install via apt. There is a known issue with firefox installed via snap and Selenium. We recommend this guide: [Resolve Issue With Firefox - Selenium](https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04)
     
 ## Thesis Information
 
