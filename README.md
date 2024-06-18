@@ -31,7 +31,9 @@ Document information and repository management are facilitated by an intuitive U
 ## Frontend Screenshots
 
 ![Home Page](./Images/NewHomePage.png)
-![Insert Frontend Print 2 Here]
+![Home Page](./Images/RepositoryView.png)
+![Home Page](./Images/GraphView.png)
+![Home Page](./Images/StatisticsView.png)
 
 ## Getting Started
 
@@ -53,7 +55,7 @@ To get started with the Automated Repository, follow these steps:
 - **Firefox browser**: [Download Firefox](https://www.mozilla.org/pt-PT/firefox/new/)
 - **OpenAI API Key**: [Get OpenAI API Key](https://openai.com/api/)
 
-**After fulfilling the pre-requisites, run the following commands depending on the OS:**
+**After fulfilling the pre-requisites, run the following commands:**
 
 **Clone the repository.**
    ```sh
