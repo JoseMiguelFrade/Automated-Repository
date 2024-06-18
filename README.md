@@ -1,5 +1,5 @@
 ﻿# Automated Repository
-<img src="./Images/AutoRepo.png" alt="Automated Repository" width="600" height="400"/>
+![Automated Repository](./Images/AutoRepo.png)
 The Automated Repository is a project developed to enable automatic document collection, filtering, and classification using various tools, including GPT-4o. This project counts with an RSS Feed Consumer module and a PDF Crawler to efficiently gather documents from various sources. GPT-4o helps in filtering relevant documents according to the intended theme. For each document, it extracts information, organizes it according to several parameters, and generates insights about each one.
 Document information and repository management are facilitated by an intuitive UI featuring various graphs and menus.
 
