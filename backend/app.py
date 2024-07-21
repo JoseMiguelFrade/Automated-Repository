@@ -266,32 +266,31 @@ def get_document(id):
     
 @app.route('/delete-document/<id>', methods=['DELETE'])
 def delete_document(id):
-    fs_files_collection = db['fs.files']
+   
     try:
         # Fetch the document from the Documents collection
         document = documents_collection.find_one({'_id': ObjectId(id)})
         if not document:
             return jsonify({'error': 'Document not found'}), 404
-
         pdf_file_id = document.get('pdf_file_id')
         if not pdf_file_id:
             return jsonify({'error': 'PDF file ID not found in document'}), 404
 
     
-        file_document = fs_files_collection.find_one({'_id': ObjectId(pdf_file_id)})
+        #file_document = fs.find_one({'_id': ObjectId(pdf_file_id)})
+        file_document = fs.get(ObjectId(pdf_file_id))
+        print("file_document",file_document)
         if not file_document:
             return jsonify({'error': 'File not found in fs.files collection'}), 404
-
-        filename = file_document.get('filename')
+       
+        filename = file_document.filename
         if not filename:
             return jsonify({'error': 'Filename not found'}), 404
-
         # Define directories
         base_dir = os.path.dirname(os.path.abspath(__file__))
         accepted_files_dir = os.path.join(base_dir, "accepted_files")
         manual_deleted_dir = os.path.join(base_dir, "manual_deleted")
         os.makedirs(manual_deleted_dir, exist_ok=True)
-
         # Move file from accepted_files to manual_deleted
         source_path = os.path.join(accepted_files_dir, filename)
         destination_path = os.path.join(manual_deleted_dir, filename)
@@ -300,12 +299,13 @@ def delete_document(id):
         if os.path.exists(source_path):
             shutil.move(source_path, destination_path)
         else:
-            return jsonify({'error': 'File not found in accepted_files directory'}), 404
-
+            print(f"File {filename} not found in accepted_files directory, skiping this operation")
+    
         # Delete document from collections
         documents_collection.delete_one({'_id': ObjectId(id)})
-        fs_files_collection.delete_one({'_id': ObjectId(pdf_file_id)})
-
+      
+        fs.delete(ObjectId(pdf_file_id))
+   
         return jsonify({'message': 'Document successfully deleted and moved to manual_deleted directory'}), 200
 
     except Exception as e:
