@@ -36,7 +36,7 @@ def parse_rss_feed_EurLex():
         publication_date = datetime.strptime(pub_date_str, '%a, %d %b %Y %H:%M:%S %z')
 
         # Ensure both dates are timezone-aware for comparison
-        one_month_ago = now.astimezone(publication_date.tzinfo) - timedelta(days=30)
+        one_month_ago = now.astimezone(publication_date.tzinfo) - timedelta(days=90)
 
         if publication_date >= one_month_ago:
             extracted_items.append({
