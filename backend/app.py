@@ -279,7 +279,7 @@ def delete_document(id):
     
         #file_document = fs.find_one({'_id': ObjectId(pdf_file_id)})
         file_document = fs.get(ObjectId(pdf_file_id))
-        print("file_document",file_document)
+        
         if not file_document:
             return jsonify({'error': 'File not found in fs.files collection'}), 404
        
