@@ -125,7 +125,7 @@ export default {
   data() {
     return {
       documents: [], // All fetched documents
-      typeOptions: ['Law', 'Directive', 'Regulation', 'Other'],
+      typeOptions: ['Law', 'Directive', 'Regulation', 'Technical Guide','Other'],
       issuerOptions: ['ENISA', 'Centro Nacional de Cibersegurança', 'Diário da República', 'Other'],
       originOptions: ['EU', 'European Commission','Portugal', 'Other'],
       subjectOptions: ['Cybersecurity', 'Data Privacy', 'Governance', 'Other'],
@@ -162,6 +162,11 @@ export default {
         { value: 'subject-asc', text: 'Subject Ascending' },
         { value: 'subject-desc', text: 'Subject Descending' },
       ],
+    issuerAliases: {
+      'ENISA': ['ENISA', 'European Union Agency for Cybersecurity (ENISA)', 'European Union Agency For Network And Information Security (ENISA)', 'EU Cybersecurity Agency', 'European Union Agency for Network and Information Security (ENISA)'],
+      'Centro Nacional de Cibersegurança': ['Centro Nacional de Cibersegurança', 'CNCS']
+      
+    }
     };
   },
   computed: {
@@ -248,94 +253,107 @@ export default {
     this.setSortingOption(this.sortingOption);
   },
   methods: {
-    ...mapMutations(['setCurrentPage', 'setFilters','setSortingOption']),
-    async fetchDocuments() {
-      try {
-        const response = await axios.get(`${apiUrl}/get-documents`);
-        this.documents = response.data.documents;
-        //this.applyFilters();
-      } catch (error) {
-        console.error('Error fetching documents:', error);
-      }
-    },
-    applyFiltersToDocument(doc) {
-    // Helper function to determine if a document matches the "Other" criteria for a given category
+  ...mapMutations(['setCurrentPage', 'setFilters', 'setSortingOption']),
+  
+  async fetchDocuments() {
+    try {
+      const response = await axios.get(`${apiUrl}/get-documents`);
+      this.documents = response.data.documents;
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    }
+  },
+
+  applyFiltersToDocument(doc) {
     const matchesOther = (categoryOptions, docValues, selectedFilters) => {
-      //console.log("aqui")
-       // console.log(selectedFilters)
-        const lowerCaseOptions = categoryOptions.map(option => option);
-        // Ensure docValues is an array to simplify the logic (split if it's a string with '/')
-        const docValuesArray = typeof docValues === 'string' ? docValues.split('/') : [docValues];
-        const isOtherSelected = selectedFilters.includes('Other');
-        //console.log(isOtherSelected)
-        const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue));
-        // If "Other" is selected but the document matches a predefined option, return false
-        return isOtherSelected && !matchesPredefinedOption;
+      const lowerCaseOptions = categoryOptions.map(option => option);
+      const docValuesArray = typeof docValues === 'string' ? docValues.split('/') : [docValues];
+      const isOtherSelected = selectedFilters.includes('Other');
+      const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue));
+      return isOtherSelected && !matchesPredefinedOption;
     };
-    // Split document categories for area and issuer if they're in 'Category1/Category2' format
+
     const docAreas = typeof doc.area === 'string' ? doc.area.split('/') : [doc.area];
-    //const docIssuers = typeof doc.issuer === 'string' ? doc.issuer.split('/') : [doc.issuer];
     const docSubjects = typeof doc.subject === 'string' ? doc.subject.split('/') : [doc.subject];
-    // Function to check match for single/multi categories against filters
+
     const matchesCategory = (docCategories, filterCategories, categoryOptions) => {
-        return !filterCategories.length || filterCategories.some(filterCategory => 
-            docCategories.some(docCategory => 
-                filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory === filterCategory));
+      return !filterCategories.length || filterCategories.some(filterCategory => 
+        docCategories.some(docCategory => 
+          filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory === filterCategory));
     };
-    
+
     const matchesSingleCategory = (docCategory, filterCategory, categoryOptions) => {
-    return !filterCategory.length || filterCategory.some(filter => 
+      return !filterCategory.length || filterCategory.some(filter => 
         filter === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategory) : docCategory === filter
-    );
-};
-    // Checks if the document matches selected filters or the "Other" criteria for each category
-    //const matchesType = !this.filters.type.length || this.filters.type.includes(doc.type);
+      );
+    };
+
     const matchesType = matchesSingleCategory(doc.type, this.filters.type, this.typeOptions);
-    //const matchesIssuer = matchesCategory(docIssuers, this.filters.issuer, this.issuerOptions);
-    const matchesIssuer = matchesSingleCategory(doc.issuer, this.filters.issuer, this.issuerOptions);
-    //const matchesOrigin = !this.filters.origin.length || this.filters.origin.includes(doc.origin);
+    const matchesIssuer = this.matchesIssuerAlias(doc.issuer, this.filters.issuer);
     const matchesOrigin = matchesSingleCategory(doc.origin, this.filters.origin, this.originOptions);
-    //const matchesOrigin = matchesCategory(doc.origin, this.filters.origin, this.originOptions);
-    //const matchesSubject = !this.filters.subject.length || this.filters.subject.includes(doc.subject);
     const matchesSubject = matchesCategory(docSubjects, this.filters.subject, this.subjectOptions);
     const matchesArea = matchesCategory(docAreas, this.filters.area, this.areaOptions);
 
-    //A document must satisfy all category conditions to be included.
-    //console.log(matchesOrigin)
     return matchesType && matchesIssuer && matchesOrigin && matchesSubject && matchesArea;
-},
-    applyFilters() {
-      
-      this.filters = { ...this.tempFilters };
-      this.dialog = false;
-    },
-    openDialog() {
-      this.tempFilters = { ...this.filters };
-      this.dialog = true;
-    },
-    goToDetails(id) {
-      this.$router.push({ name: 'Details', params: { id } });
-    },
-    parseDate(dateStr) {
-      const parts = dateStr.split('/');
-      // Note: months are 0-based in JavaScript Date
-      return new Date(parts[2], parts[1] - 1, parts[0]);
-    },
-    parseDateUpload(dateStr) {
-     // hh:mm:ss dd/mm/yyyy
-      const parts = dateStr.split(' ');
-      const date = parts[1].split('/');
-      const time = parts[0].split(':');
-      // Note: months are 0-based in JavaScript Date
-      return new Date(date[2], date[1] - 1, date[0], time[0], time[1], time[2]);
-    },
-    truncateAbstract(abstract) {
-      if (abstract.length > 455) {
-        return abstract.substring(0, 455) + '...';
+  },
+
+  matchesIssuerAlias(issuer, filterIssuers) {
+    if (!filterIssuers.length) return true; // If no filter is applied, return true
+
+    const isOtherSelected = filterIssuers.includes('Other');
+
+    if (isOtherSelected) {
+      // Check if the issuer matches any of the predefined aliases
+      for (const primaryIssuer in this.issuerAliases) {
+        const aliasList = this.issuerAliases[primaryIssuer];
+        if (aliasList.includes(issuer)) {
+          return false; // Exclude documents that match any predefined alias
+        }
       }
-      return abstract;
+      return true; // Include documents that do not match any predefined alias
+    } else {
+      // Check if the issuer matches any of the selected filter issuers or their aliases
+      for (const primaryIssuer of filterIssuers) {
+        if (this.issuerAliases[primaryIssuer]) {
+          const aliasList = this.issuerAliases[primaryIssuer];
+          if (aliasList.includes(issuer)) {
+            return true;
+          }
+        }
+      }
+      return filterIssuers.includes(issuer);
     }
   },
+
+
+  applyFilters() {
+    this.filters = { ...this.tempFilters };
+    this.dialog = false;
+  },
+  openDialog() {
+    this.tempFilters = { ...this.filters };
+    this.dialog = true;
+  },
+  goToDetails(id) {
+    this.$router.push({ name: 'Details', params: { id } });
+  },
+  parseDate(dateStr) {
+    const parts = dateStr.split('/');
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+  },
+  parseDateUpload(dateStr) {
+    const parts = dateStr.split(' ');
+    const date = parts[1].split('/');
+    const time = parts[0].split(':');
+    return new Date(date[2], date[1] - 1, date[0], time[0], time[1], time[2]);
+  },
+  truncateAbstract(abstract) {
+    if (abstract.length > 455) {
+      return abstract.substring(0, 455) + '...';
+    }
+    return abstract;
+  }
+},
   watch: {
 
     currentPage: {

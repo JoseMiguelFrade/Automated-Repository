@@ -405,7 +405,21 @@ def regenerate_doc():
 
 @app.route('/areas', methods=['GET'])
 def get_areas():
-    pipeline = [
+    issuer = request.args.get('issuer')
+    pipeline = []
+
+    # Adjust the $match stage to filter by the selected issuer
+    if issuer:
+        if issuer.lower() == 'enisa':
+            pipeline.append({"$match": {"issuer": {"$regex": "ENISA", "$options": "i"}}})
+        elif issuer.lower() == 'cncs':
+            pipeline.append({"$match": {"issuer": {"$regex": "(Centro Nacional de Cibersegurança|Observatorio Cibersegurança|CNCS)", "$options": "i"}}})
+        elif issuer.lower() == 'assembleia':
+            pipeline.append({"$match": {"issuer": "Assembleia da República"}})
+        elif issuer.lower() == 'eu':
+            pipeline.append({"$match": {"issuer": {"$regex": "(European Parliament and Council of the European Union|European Commission)", "$options": "i"}}})
+
+    pipeline.extend([
         # Split the 'area' field if it contains '/'
         {"$project": {
             "areas": {
@@ -420,7 +434,7 @@ def get_areas():
         }},
         # Group by the trimmed 'area' and count each one
         {"$group": {"_id": "$area", "count": {"$sum": 1}}}
-    ]
+    ])
     results = documents_collection.aggregate(pipeline)
     data = {result["_id"]: result["count"] for result in results}
     return jsonify(data)
@@ -552,6 +566,81 @@ def get_area_counts_by_year():
         } for result in results
     ]
     return jsonify(data)
+
+
+@app.route('/document_counts_by_month', methods=['GET'])
+def get_document_counts_by_month():
+    pipeline = [
+        # Project the year and month from the upload_date
+        {
+            "$project": {
+                "yearMonth": {
+                    "$dateToString": {
+                        "format": "%Y-%m",
+                        "date": {
+                            "$dateFromString": {
+                                "dateString": "$upload_date",
+                                "format": "%H:%M:%S %d/%m/%Y",
+                                "onError": None,
+                                "onNull": None
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        # Match documents that have a valid yearMonth
+        {
+            "$match": {
+                "yearMonth": {"$ne": None}
+            }
+        },
+        # Group by the yearMonth and count the documents
+        {
+            "$group": {
+                "_id": "$yearMonth",
+                "count": {"$sum": 1}
+            }
+        },
+        # Sort by yearMonth
+        {
+            "$sort": {"_id": 1}
+        }
+    ]
+
+    results = list(documents_collection.aggregate(pipeline))
+    
+    # Calculate cumulative counts
+    cumulative_count = 0
+    cumulative_data = []
+    for result in results:
+        cumulative_count += result["count"]
+        cumulative_data.append({"yearMonth": result["_id"], "count": cumulative_count})
+
+    return jsonify(cumulative_data)
+
+
+@app.route('/document_counts_by_type', methods=['GET'])
+def get_document_counts_by_type():
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$type",
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        }
+    ]
+
+    results = documents_collection.aggregate(pipeline)
+    data = [{"type": result["_id"], "count": result["count"]} for result in results]
+    return jsonify(data)
+
+
+
+
 
 @app.route('/list-subdirs', methods=['GET'])
 def list_subdirs():
