@@ -36,14 +36,12 @@
         </v-card>
       </v-col>
     </v-row>
-
     <!-- Pagination Control -->
     <v-row justify="center">
       <v-col cols="12">
         <v-pagination v-model="currentPage" :length="totalPages" :total-visible="7" circle></v-pagination>
       </v-col>
     </v-row>
-
     <!-- Filter Dialog -->
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
@@ -59,7 +57,6 @@
                   </v-col>
                 </v-row>
               </v-col>
-
               <v-col cols="12">
                 <v-subheader>Issuer</v-subheader>
                 <v-row>
@@ -68,7 +65,6 @@
                   </v-col>
                 </v-row>
               </v-col>
-
               <v-col cols="12">
                 <v-subheader>Origin</v-subheader>
                 <v-row>
@@ -77,7 +73,6 @@
                   </v-col>
                 </v-row>
               </v-col>
-
               <v-col cols="12">
                 <v-subheader>Subject</v-subheader>
                 <v-row>
@@ -86,7 +81,6 @@
                   </v-col>
                 </v-row>
               </v-col>
-
               <v-col cols="12">
                 <v-subheader>Area</v-subheader>
                 <v-row>
@@ -95,7 +89,6 @@
                   </v-col>
                 </v-row>
               </v-col>
-
               <v-col cols="12" class="mt-4">
                 <v-divider></v-divider>
                 <v-subheader class="mt-3">Order By</v-subheader>
@@ -113,20 +106,17 @@
     </v-dialog>
   </v-container>
 </template>
-
 <script>
 import axios from 'axios';
 import { mapState, mapMutations } from 'vuex';
-
 const apiUrl = import.meta.env.VITE_API_URL;
-
 export default {
   name: 'Repository',
   data() {
     return {
       documents: [], // All fetched documents
       typeOptions: ['Law', 'Directive', 'Regulation', 'Technical Guide','Other'],
-      issuerOptions: ['ENISA', 'Centro Nacional de Cibersegurança', 'Diário da República', 'Other'],
+      issuerOptions: ['ENISA', 'Centro Nacional de Cibersegurança', 'Diário da República', 'Observatório de Cibersegurança','Other'],
       originOptions: ['EU', 'European Commission','Portugal', 'Other'],
       subjectOptions: ['Cybersecurity', 'Data Privacy', 'Governance', 'Other'],
       areaOptions: ['General', 'Defense', 'Healthcare', 'Finance', 'Energy', 'Cybersecurity','AI','Transport','Digital Rights','Justice','Other'],
@@ -180,7 +170,6 @@ export default {
       this.$store.commit('setFilters', value);
     }
   },
-
     currentPage: {
     get() {
       return this.$store.state.currentPage;
@@ -198,7 +187,6 @@ export default {
     }
   
   },
-
     totalPages() {
       return Math.ceil(this.filteredDocuments.length / this.itemsPerPage);
     },
@@ -207,49 +195,48 @@ export default {
       const end = start + this.itemsPerPage;
       return this.filteredDocuments.slice(start, end);
     },
-    filteredDocuments() {
-      return this.documents.filter(doc => {
-        // First, check if the document matches the search query if one is present
-        const matchesSearchQuery = this.searchQuery.trim() === '' || doc.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-        // Then, check if it matches the selected filters
-        const matchesFilters = this.applyFiltersToDocument(doc);
-
-        // A document must match both the search query and the filters to be included
-        return matchesSearchQuery && matchesFilters;
-      }).sort((a, b) => {
-        switch (this.sortingOption.value) {
-          case 'title-asc':
-            return a.title.localeCompare(b.title);
-          case 'title-desc':
-            return b.title.localeCompare(a.title);
-          case 'date-asc':
-            return this.parseDate(a.date) - this.parseDate(b.date);
-          case 'date-desc':
-            return this.parseDate(b.date) - this.parseDate(a.date);
-          case 'uploaded-date-asc':
-            return this.parseDateUpload(a.upload_date) - this.parseDateUpload(b.upload_date);
-          case 'uploaded-date-desc':
-            return this.parseDateUpload(b.upload_date) - this.parseDateUpload(a.upload_date);	          
-          case 'area-asc':
-            return a.area.localeCompare(b.area);
-          case 'area-desc':
-            return b.area.localeCompare(a.area);
-          case 'subject-asc':
-            return a.subject.localeCompare(b.subject);
-          case 'subject-desc':
-            return b.subject.localeCompare(a.subject);
-          default:
-            return 0;
-        };
-      });
-     
-    },
+ 
+filteredDocuments() {
+  return this.documents.filter(doc => {
+    // First, check if the document matches the search query if one is present
+    const matchesSearchQuery = this.searchQuery.trim() === '' || doc.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+    // Then, check if it matches the selected filters
+    const matchesFilters = this.applyFiltersToDocument(doc);
+    // A document must match both the search query and the filters to be included
+    return matchesSearchQuery && matchesFilters;
+  }).sort((a, b) => {
+    switch (this.sortingOption.value) {
+      case 'title-asc':
+        return a.title.localeCompare(b.title);
+      case 'title-desc':
+        return b.title.localeCompare(a.title);
+      case 'date-asc':
+        return this.parseDate(a.date) - this.parseDate(b.date);
+      case 'date-desc':
+        return this.parseDate(b.date) - this.parseDate(a.date);
+      case 'uploaded-date-asc':
+        return this.parseDateUpload(a.upload_date) - this.parseDateUpload(b.upload_date);
+      case 'uploaded-date-desc':
+        return this.parseDateUpload(b.upload_date) - this.parseDateUpload(a.upload_date);
+      case 'area-asc':
+        return a.area.localeCompare(b.area);
+      case 'area-desc':
+        return b.area.localeCompare(a.area);
+      case 'subject-asc':
+        return a.subject.localeCompare(b.subject);
+      case 'subject-desc':
+        return b.subject.localeCompare(a.subject);
+      default:
+        return 0;
+    }
+  });
+},
   },
   mounted() {
     this.fetchDocuments();
     this.setCurrentPage(this.currentPage);
     this.setFilters(this.filters);
+    //console.log(this.filters);
     this.setSortingOption(this.sortingOption);
   },
   methods: {
@@ -263,54 +250,50 @@ export default {
       console.error('Error fetching documents:', error);
     }
   },
-
   applyFiltersToDocument(doc) {
     const matchesOther = (categoryOptions, docValues, selectedFilters) => {
-      const lowerCaseOptions = categoryOptions.map(option => option);
+      const lowerCaseOptions = categoryOptions.map(option => option.toLowerCase());
       const docValuesArray = typeof docValues === 'string' ? docValues.split('/') : [docValues];
       const isOtherSelected = selectedFilters.includes('Other');
-      const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue));
+      const matchesPredefinedOption = docValuesArray.some(docValue => lowerCaseOptions.includes(docValue.toLowerCase()));
       return isOtherSelected && !matchesPredefinedOption;
     };
-
     const docAreas = typeof doc.area === 'string' ? doc.area.split('/') : [doc.area];
     const docSubjects = typeof doc.subject === 'string' ? doc.subject.split('/') : [doc.subject];
-
     const matchesCategory = (docCategories, filterCategories, categoryOptions) => {
       return !filterCategories.length || filterCategories.some(filterCategory => 
         docCategories.some(docCategory => 
-          filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory === filterCategory));
+          filterCategory === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategories) : docCategory.toLowerCase() === filterCategory.toLowerCase()));
     };
-
     const matchesSingleCategory = (docCategory, filterCategory, categoryOptions) => {
       return !filterCategory.length || filterCategory.some(filter => 
-        filter === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategory) : docCategory === filter
-      );
+        filter === 'Other' ? matchesOther(categoryOptions, docCategory, filterCategory) : docCategory.toLowerCase() === filter.toLowerCase());
     };
-
     const matchesType = matchesSingleCategory(doc.type, this.filters.type, this.typeOptions);
     const matchesIssuer = this.matchesIssuerAlias(doc.issuer, this.filters.issuer);
     const matchesOrigin = matchesSingleCategory(doc.origin, this.filters.origin, this.originOptions);
     const matchesSubject = matchesCategory(docSubjects, this.filters.subject, this.subjectOptions);
     const matchesArea = matchesCategory(docAreas, this.filters.area, this.areaOptions);
-
     return matchesType && matchesIssuer && matchesOrigin && matchesSubject && matchesArea;
   },
-
   matchesIssuerAlias(issuer, filterIssuers) {
     if (!filterIssuers.length) return true; // If no filter is applied, return true
 
     const isOtherSelected = filterIssuers.includes('Other');
 
     if (isOtherSelected) {
-      // Check if the issuer matches any of the predefined aliases
+      // Check if the issuer matches any of the predefined issuers or their aliases
       for (const primaryIssuer in this.issuerAliases) {
         const aliasList = this.issuerAliases[primaryIssuer];
         if (aliasList.includes(issuer)) {
           return false; // Exclude documents that match any predefined alias
         }
       }
-      return true; // Include documents that do not match any predefined alias
+      // Exclude documents that match predefined issuers without aliases
+      if (this.issuerOptions.includes(issuer) && issuer !== 'Other') {
+        return false;
+      }
+      return true; // Include documents that do not match any predefined issuer or alias
     } else {
       // Check if the issuer matches any of the selected filter issuers or their aliases
       for (const primaryIssuer of filterIssuers) {
@@ -319,13 +302,13 @@ export default {
           if (aliasList.includes(issuer)) {
             return true;
           }
+        } else if (primaryIssuer.toLowerCase() === issuer.toLowerCase()) {
+          return true;
         }
       }
-      return filterIssuers.includes(issuer);
+      return false; // Exclude documents that do not match any selected filter issuers or their aliases
     }
   },
-
-
   applyFilters() {
     this.filters = { ...this.tempFilters };
     this.dialog = false;
@@ -338,8 +321,25 @@ export default {
     this.$router.push({ name: 'Details', params: { id } });
   },
   parseDate(dateStr) {
-    const parts = dateStr.split('/');
-    return new Date(parts[2], parts[1] - 1, parts[0]);
+    // Check if the date is in the format 'dd/mm/yyyy'
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const parts = dateStr.split('/');
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+    // Check if the date is in the format 'mm/yyyy'
+    if (/^\d{2}\/\d{4}$/.test(dateStr)) {
+      const parts = dateStr.split('/');
+      return new Date(parts[1], parts[0] - 1);
+    }
+
+    // Check if the date is in the format 'yyyy'
+    if (/^\d{4}$/.test(dateStr)) {
+      return new Date(dateStr, 0);
+    }
+
+    // If the date format is invalid, return a far future date to push it to the end
+    return new Date('9999-12-31');
   },
   parseDateUpload(dateStr) {
     const parts = dateStr.split(' ');
@@ -354,8 +354,8 @@ export default {
     return abstract;
   }
 },
-  watch: {
 
+  watch: {
     currentPage: {
       handler(value) {
         this.setCurrentPage(value);
