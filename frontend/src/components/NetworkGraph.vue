@@ -5,7 +5,7 @@
     <v-col>
       <h1>Legal Document Network Graph</h1>
       <p class="subtitle-1">
-        Explore the intricate network of connections between various legal documents. Click on a node to
+        Explore the intricate network of connections between cybersecurity documentation. Click on a node to
         view more details about a document.
       </p>
     </v-col>
