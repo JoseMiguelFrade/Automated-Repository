@@ -88,16 +88,15 @@ export default {
                 .then(response => {
                     console.log(response.data);
                     const areaData = response.data;
-                    const sortedAreaData = Object.entries(areaData)
-                        .sort((a, b) => b[1] - a[1]); // Sort by count descending
-                    const labels = sortedAreaData.map(item => item[0]);
-                    const counts = sortedAreaData.map(item => item[1]);
+                    const labels = Object.keys(areaData);
+                    const counts = Object.values(areaData);
                     this.createChart(labels, counts, 'areaChart', 'Number of Documents by Area');
                 })
                 .catch(error => {
                     console.error("Error fetching area data:", error);
                 });
         },
+
         fetchDocumentCountsByYear() {
             axios.get(`${apiUrl}/document_counts_by_year`, { params: { origin: this.selectedOrigin } })
                 .then(response => {
@@ -176,7 +175,7 @@ export default {
             const allAreas = Array.from(new Set(data.flatMap(year => year.areas.map(area => area.area))));
             const groupSize = Math.ceil(allAreas.length / 4);
             const areaGroups = [];
-    
+
             for (let i = 0; i < 4; i++) {
                 areaGroups[i] = allAreas.slice(i * groupSize, (i + 1) * groupSize);
             }

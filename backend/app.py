@@ -433,11 +433,15 @@ def get_areas():
             "area": {"$trim": {"input": "$areas"}}
         }},
         # Group by the trimmed 'area' and count each one
-        {"$group": {"_id": "$area", "count": {"$sum": 1}}}
+        {"$group": {"_id": "$area", "count": {"$sum": 1}}},
+        # Sort by the count in descending order
+        {"$sort": {"count": -1}}
     ])
+
     results = documents_collection.aggregate(pipeline)
     data = {result["_id"]: result["count"] for result in results}
     return jsonify(data)
+
 
 @app.route('/document_counts_by_year', methods=['GET'])
 def get_document_counts_by_year():
