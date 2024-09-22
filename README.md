@@ -84,11 +84,11 @@ To get started with the Automated Repository, follow these steps:
      ````
   
 ### Collected Documents
-** THIS STEP IS OPTIONAL **
+**THIS STEP IS OPTIONAL**
 
 All documents gathered during the development of this project, along with their respective classifications, can be downloaded [here](https://drive.google.com/file/d/1rTfZbxoQLLzN686MScXfs-_cFXuLUOI5/view?usp=sharing). 
 
-The link contains a complete copy of the project's database in JSON format, which can be uploaded to a MongoDB-managed database to replicate the final database used at the conclusion of the project.
+The link contains a complete copy of the project's database in JSON format, which can be uploaded to a MongoDB-managed database to replicate the final database used at the conclusion of the project. The zip file contains 3 JSON files, one for each MongoDB Collection. This structure should be replicated in your project in order to import the database information.
 
 ### Known Issues - Ubuntu:
   - It may be necessary to rename geckodriver to geckodriver.exe.
