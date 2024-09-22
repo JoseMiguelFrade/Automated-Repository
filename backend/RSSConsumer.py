@@ -13,7 +13,7 @@ def parse_rss_feed_EurLex():
     if response.status_code == 200:
         rss_content = response.content
        # print("RSS feed fetched successfully.")
-        #print(rss_content)
+        print(rss_content)
     else:
         raise Exception(f"Failed to fetch RSS feed. Status code: {response.status_code}")
 
