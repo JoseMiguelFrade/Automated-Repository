@@ -82,7 +82,13 @@ To get started with the Automated Repository, follow these steps:
      ```sh
      AutomatedRepository_Linux.sh
      ````
-   
+  
+### Collected Documents
+
+All documents gathered during the development of this project, along with their respective classifications, can be downloaded [here](https://drive.google.com/file/d/1rTfZbxoQLLzN686MScXfs-_cFXuLUOI5/view?usp=sharing). 
+
+The link contains a complete copy of the project's database in JSON format, which can be uploaded to a MongoDB-managed database to replicate the final database used at the conclusion of the project.
+
   **Known Issues - Ubuntu**:
   - It may be necessary to rename geckodriver to geckodriver.exe.
   - If firefox browser was installed by default with Ubuntu, it may be necessary to remove it and re-install via apt. There is a known issue with firefox installed via snap and Selenium. We recommend this guide: [Resolve Issue With Firefox - Selenium](https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04)
