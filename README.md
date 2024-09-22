@@ -23,7 +23,7 @@ Document information and repository management are facilitated by an intuitive U
 - **Frontend**: Vuetify 3
 - **Backend**: Flask
 - **Database**: MongoDB
-- **OpenAI's GPT Models**: GPT-4o and GPT-3.5 Turbo
+- **OpenAI's GPT Models**: GPT-4o and GPT-4o Mini
 
 ## Project Overview
 
