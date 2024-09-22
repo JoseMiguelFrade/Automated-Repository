@@ -84,6 +84,7 @@ To get started with the Automated Repository, follow these steps:
      ````
   
 ### Collected Documents
+** THIS STEP IS OPTIONAL **
 
 All documents gathered during the development of this project, along with their respective classifications, can be downloaded [here](https://drive.google.com/file/d/1rTfZbxoQLLzN686MScXfs-_cFXuLUOI5/view?usp=sharing). 
 
