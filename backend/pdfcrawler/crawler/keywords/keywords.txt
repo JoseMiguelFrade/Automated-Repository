@@ -1,8 +1,5 @@
-Cibersegurança
-CNCS
-Portugal
-Informática
-Redes
-Vulnerabilidades
+Information and Communication Technologies
 Cybersecurity
-European Union
+Cibersegurança
+tecnologias da informação
+segurança

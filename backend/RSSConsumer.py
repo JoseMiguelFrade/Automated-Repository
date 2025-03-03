@@ -14,6 +14,7 @@ def parse_rss_feed_EurLex():
         rss_content = response.content
        # print("RSS feed fetched successfully.")
         print(rss_content)
+        print("\n" + "############################################" + "\n")
     else:
         raise Exception(f"Failed to fetch RSS feed. Status code: {response.status_code}")
 
@@ -36,7 +37,7 @@ def parse_rss_feed_EurLex():
         publication_date = datetime.strptime(pub_date_str, '%a, %d %b %Y %H:%M:%S %z')
 
         # Ensure both dates are timezone-aware for comparison
-        one_month_ago = now.astimezone(publication_date.tzinfo) - timedelta(days=90)
+        one_month_ago = now.astimezone(publication_date.tzinfo) - timedelta(days=60)
 
         if publication_date >= one_month_ago:
             extracted_items.append({
@@ -61,7 +62,7 @@ def parse_rss_feed_DRE():
     ]
 
     now = datetime.now()
-    one_year_ago = now - timedelta(days=365)
+    one_year_ago = now - timedelta(days=60)
     start_date = one_year_ago.strftime('%Y-%m-%d')
     end_date = now.strftime('%Y-%m-%d')
 

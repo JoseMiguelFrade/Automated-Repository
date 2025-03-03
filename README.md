@@ -96,9 +96,13 @@ The link contains a complete copy of the project's database in JSON format, whic
     
 ## Thesis Information
 
-This project is part of a master thesis conducted at the [Instituto Politécnico de Leiria](https://www.ipleiria.pt/).
+This project is part of a master thesis conducted at the [Instituto Politécnico de Leiria](https://www.ipleiria.pt/), supervised by Prof. Dr. Mário Antunes.
 
 ![Institute Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png/200px-Log%C3%B3tipo_Polit%C3%A9cnico_Leiria_01.png)
 
+## Publications
+
+This project was the basis for the [Publication](blank) "An Automated Repository for the Efficient Management of
+Complex Documentation" 
 
 

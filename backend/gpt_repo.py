@@ -62,7 +62,7 @@ def analyze_document(pdf_path, total_queries, gpt_3_5_count):
     )
 
     print(response.choices[0].message.content)
-    
+    print("############################################")
     # Increment request count
     request_count += 1
     return response.choices[0].message.content

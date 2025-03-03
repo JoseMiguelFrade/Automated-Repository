@@ -20,7 +20,7 @@
             type="number"
             outlined
             dense
-            hint="Number of queries using the lower-cost GPT-3.5 Turbo model"
+            hint="Number of queries using the lower-cost GPT-4o mini model"
             persistent-hint
           ></v-text-field>
         </v-col>
