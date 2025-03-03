@@ -103,6 +103,6 @@ This project is part of a master thesis conducted at the [Instituto Politécnico
 ## Publications
 
 This project was the basis for the [Publication](blank) "An Automated Repository for the Efficient Management of
-Complex Documentation" 
+Complex Documentation". The publication was authored by José Frade and Prof. Dr Mário Antunes.
 
 
